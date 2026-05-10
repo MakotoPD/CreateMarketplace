@@ -1,0 +1,34 @@
+{
+  "item.create_marketplace.registration_card": "Carte d'Enregistrement",
+  "key.createmarketplace.open_market": "Ouvrir le Marché Global",
+  "key.categories.createmarketplace": "Create: Marketplace",
+  "itemGroup.create_marketplace": "Create: Marketplace",
+  
+  "gui.create_marketplace.global_market.title": "Marché Global",
+  "gui.create_marketplace.global_market.my_shops": "Mes Boutiques",
+  "gui.create_marketplace.global_market.search": "Chercher...",
+  "gui.create_marketplace.global_market.no_offers": "Aucune offre disponible sur le marché.",
+  "gui.create_marketplace.global_market.player": "Joueur : %s",
+  "gui.create_marketplace.global_market.shop": "Boutique : %s",
+  "gui.create_marketplace.global_market.navigate": "Naviguer",
+  "gui.create_marketplace.global_market.navigate_success": "Point de passage '%s' envoyé à Xaero's Minimap !",
+  "gui.create_marketplace.global_market.favorites_only": "★ Favoris",
+  "gui.create_marketplace.global_market.all_shops": "☆ Tout",
+  "gui.create_marketplace.global_market.back": "Retour",
+  
+  "gui.create_marketplace.registration.title": "Enregistrement de Boutique",
+  "gui.create_marketplace.registration.publish": "Publier",
+  "gui.create_marketplace.registration.name": "Nom de la boutique",
+  "gui.create_marketplace.registration.add_to_existing": "Ajouter à une boutique existante :",
+  
+  "gui.create_marketplace.my_shops.title": "Mes Boutiques",
+  "gui.create_marketplace.my_shops.delete": "Supprimer",
+  "gui.create_marketplace.my_shops.no_shops": "Vous n'avez aucune boutique.",
+  "gui.create_marketplace.my_shops.blocks": "Blocs : %s",
+  "gui.create_marketplace.my_shops.price": "Prix : %s",
+  "gui.create_marketplace.my_shops.pos": "Pos : %s",
+  
+  "message.create_marketplace.registration_success": "Le serveur a enregistré votre boutique avec succès : %s",
+  "message.create_marketplace.no_card": "Vous n'avez pas de Carte d'Enregistrement dans votre inventaire !",
+  "message.create_marketplace.delete_success": "Boutique(s) supprimée(s) avec succès."
+}

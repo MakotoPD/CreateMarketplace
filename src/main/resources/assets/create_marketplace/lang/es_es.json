@@ -1,0 +1,34 @@
+{
+  "item.create_marketplace.registration_card": "Tarjeta de Registro",
+  "key.createmarketplace.open_market": "Abrir Mercado Global",
+  "key.categories.createmarketplace": "Create: Marketplace",
+  "itemGroup.create_marketplace": "Create: Marketplace",
+  
+  "gui.create_marketplace.global_market.title": "Mercado Global",
+  "gui.create_marketplace.global_market.my_shops": "Mis Tiendas",
+  "gui.create_marketplace.global_market.search": "Buscar...",
+  "gui.create_marketplace.global_market.no_offers": "No hay ofertas disponibles en el mercado.",
+  "gui.create_marketplace.global_market.player": "Jugador: %s",
+  "gui.create_marketplace.global_market.shop": "Tienda: %s",
+  "gui.create_marketplace.global_market.navigate": "Navegar",
+  "gui.create_marketplace.global_market.navigate_success": "¡Punto de ruta '%s' enviado a Xaero's Minimap!",
+  "gui.create_marketplace.global_market.favorites_only": "★ Favoritos",
+  "gui.create_marketplace.global_market.all_shops": "☆ Todos",
+  "gui.create_marketplace.global_market.back": "Volver",
+  
+  "gui.create_marketplace.registration.title": "Registro de Tienda",
+  "gui.create_marketplace.registration.publish": "Publicar",
+  "gui.create_marketplace.registration.name": "Nombre de la tienda",
+  "gui.create_marketplace.registration.add_to_existing": "Añadir a tienda existente:",
+  
+  "gui.create_marketplace.my_shops.title": "Mis Tiendas",
+  "gui.create_marketplace.my_shops.delete": "Eliminar",
+  "gui.create_marketplace.my_shops.no_shops": "No tienes ninguna tienda.",
+  "gui.create_marketplace.my_shops.blocks": "Bloques: %s",
+  "gui.create_marketplace.my_shops.price": "Precio: %s",
+  "gui.create_marketplace.my_shops.pos": "Pos: %s",
+  
+  "message.create_marketplace.registration_success": "El servidor ha registrado con éxito tu tienda: %s",
+  "message.create_marketplace.no_card": "¡No tienes una Tarjeta de Registro en tu inventario!",
+  "message.create_marketplace.delete_success": "Tienda(s) eliminada(s) con éxito."
+}
