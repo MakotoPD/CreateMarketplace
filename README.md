@@ -1,48 +1,72 @@
-# Create: Marketplace
+# 🏪 Create: Marketplace
 
-**Create: Marketplace** is an advanced mod for NeoForge 1.21.1 that bridges the gap between **Create** technology and the **Create: Numismatics** currency system, establishing a global advertising board for player-owned shops.
+![License: GPL-3.0](https://img.shields.io/badge/License-GPLv3-blue.svg)
+![Minecraft: 1.21.1](https://img.shields.io/badge/Minecraft-1.21.1-green.svg)
+![NeoForge: 21.1.228+](https://img.shields.io/badge/NeoForge-21.1.228+-orange.svg)
 
-## 🚀 Key Features
+**Create: Marketplace** is a specialized expansion for the **Create** mod ecosystem on NeoForge 1.21.1. It bridges the gap between industrial automation and player commerce by providing a unified, server-wide advertising board for all **Create: Numismatics** vendors.
 
-*   **Global Market Board:** Browse offers from all shops across the server in one synchronized, easy-to-use menu.
-*   **Registration Card:** A specialized item that allows you to instantly register your Vendor to the global marketplace.
-*   **Xaero's Minimap Integration:** Send a shop's location directly to your minimap as a waypoint with a single click.
-*   **Full Numismatics Support:** Completely compatible with Vendors and the coin-based economy.
-*   **Shop Management:** Dedicated "My Shops" menu to track, manage, or remove your listings.
+---
+
+## ✨ Features
+
+### 🛒 Global Market Interface
+*   **Centralized Hub:** Access all player shops from a single, beautiful GUI.
+*   **Live Search:** Find specific items, shops, or owners instantly with the built-in search bar.
+*   **Favorites System:** Mark your favorite shops with a star (★) to keep them at the top of your list.
+*   **Grouped Listings:** Offers are logically grouped by owner and shop name for easy browsing.
+
+### 📍 Seamless Navigation
+*   **Xaero's Minimap Integration:** One-click navigation! Sent waypoints directly to your minimap to find shops in the world.
+*   **Customizable Icons:** Choose between a shopping basket icon, the shop's first letter, or a custom symbol for your waypoints via config.
+
+### 💳 Registration System
+*   **Registration Card:** A dedicated tool used to link your Numismatics Vendors to the global board.
+*   **Dynamic Names:** Give your shops unique names and add multiple items to the same shop listing.
+*   **Configurable Durability:** Server owners can decide if registration cards are consumed upon use or have infinite durability.
+
+### 🌐 Localization & Compatibility
+*   **Multilingual:** Full support for **English**, **Polish**, **German**, **Spanish**, and **French**.
+*   **Soft Dependency:** Works perfectly with or without Xaero's Minimap installed.
+
+---
 
 ## 🛠 Requirements
 
 *   **Minecraft:** 1.21.1
-*   **Mod Loader:** NeoForge (version 21.1.228+)
+*   **NeoForge:** 21.1.228 or higher
 *   **Dependencies:**
-    *   [Create](https://www.curseforge.com/minecraft/mc-mods/create) (v0.6.0+)
-    *   [Create: Numismatics](https://www.curseforge.com/minecraft/mc-mods/create-numismatics) (v1.0.0+)
-*   **Optional:**
-    *   [Xaero's Minimap](https://www.curseforge.com/minecraft/mc-mods/xaeros-minimap) (for navigation features)
-
-## 📖 How to Use
-
-### 1. Registering a Shop
-1.  Craft a **Registration Card**.
-2.  Set up your **Vendor** from *Create: Numismatics*, select the item you want to sell, and set the price.
-3.  **Right-click** the Vendor with the Registration Card (do not sneak).
-4.  Enter your shop name in the popup menu and publish the listing.
-
-### 2. Browsing the Market
-*   Use the Registration Card (Right-click in the air or Shift+Right-click a block) to open the **Global Market**.
-*   Select an offer and click **"Navigate"** to automatically add a waypoint to your minimap.
-
-### 3. Editing Vendors
-*   To access the standard *Numismatics* settings (price, filters, etc.), click the Vendor while **sneaking (Shift + Right-click)**.
-
-## ⚠️ Important Note for Developers (Dev Mode)
-When running in a development environment (via Gradle), *Create: Numismatics* requires the player to wear **Golden Boots** to be recognized as a "trusted owner" of the block. Without them, you will be unable to open or destroy Vendors.
-
-## 💻 Installation
-
-1. Download the `.jar` file for your version.
-2. Place the file in the `mods` folder of your Minecraft installation.
-3. Ensure all required dependencies (Create and Numismatics) are installed.
+    *   [Create](https://modrinth.com/mod/create) (v0.6.1+)
+    *   [Create: Numismatics](https://modrinth.com/mod/create-numismatics) (v1.0.0+)
+*   **Optional Integration:**
+    *   [Xaero's Minimap](https://modrinth.com/mod/xaeros-minimap) & [Xaero's World Map](https://modrinth.com/mod/xaeros-world-map)
 
 ---
-*Created by Makoto & Antigravity*
+
+## 📖 Getting Started
+
+1.  **Craft a Registration Card:** Your gateway to the marketplace.
+2.  **Set up your Vendor:** Use *Create: Numismatics* to set your items and prices.
+3.  **Register:** Right-click your Vendor with the Registration Card to name and publish your shop.
+4.  **Open Market:** Use the card (Right-click air) or the default hotkey (**`M`**) to browse the global market.
+5.  **Manage:** Use the "My Shops" button within the market to delete or track your own listings.
+
+---
+
+## ⚙️ Configuration
+
+Located in `config/create_marketplace-common.toml`:
+*   `waypointSymbolMode`: Set how waypoints look on the map (`ICON`, `FIRST_LETTER`, `CUSTOM`).
+*   `customWaypointSymbol`: Define a specific character for waypoints.
+*   `useCardDurability`: Toggle whether Registration Cards are consumed when registering a shop.
+
+---
+
+## 🔨 Developers & Contributors
+
+*   **Author:** MakotoPD
+*   **AI Partner:** Antigravity (Advanced Agentic Coding)
+*   **License:** GNU GPL v3
+
+---
+*Built with ❤️ for the Create community.*
