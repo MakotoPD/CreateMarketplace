@@ -17,7 +17,7 @@ public class XaeroCompat {
             // XaeroMinimapSession.getCurrentSession().getWaypointsManager().getWaypoints().getList().add(w);
             
             Class<?> waypointClass = Class.forName("xaero.common.minimap.waypoints.Waypoint");
-            String symbol = name.length() > 0 ? name.substring(0, 1).toUpperCase() : "M";
+            String symbol = "🛒";
             
             Object waypoint = waypointClass.getConstructor(
                     int.class, int.class, int.class, String.class, String.class, int.class, int.class, boolean.class

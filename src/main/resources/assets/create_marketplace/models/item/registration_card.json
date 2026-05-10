@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "minecraft:item/paper"
+    "layer0": "create_marketplace:item/registration_card"
   }
 }

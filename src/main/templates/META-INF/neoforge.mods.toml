@@ -36,17 +36,17 @@ displayName="${mod_name}" #mandatory
 #displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
 
 # A file name (in the root of the mod JAR) containing a logo for display
-#logoFile="examplemod.png" #optional
+logoFile="logo.png" #optional
 
 # A text field displayed in the mod UI
 #credits="" #optional
 
 # The authors of the mod, displayed in the mod UI (optional)
-#authors=""
+authors="MakotoPD"
 
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-Example mod description.
+The global marketplace for Create! servers. Register your Numismatics shops, browse other players’ listings and navigate to them using Xaero’s Minimap.
 '''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
