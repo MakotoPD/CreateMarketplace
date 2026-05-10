@@ -22,9 +22,10 @@ public class GlobalMarketScreen extends Screen {
 
     private final Map<String, Boolean> expandedPlayers = new HashMap<>();
     private final Map<String, Boolean> expandedShops = new HashMap<>();
+    private boolean showFavoritesOnly = false;
 
     public GlobalMarketScreen(List<MarketOffer> offers) {
-        super(Component.literal("Globalny Rynek"));
+        super(Component.translatable("gui.create_marketplace.global_market.title"));
         this.offers = offers;
     }
 
@@ -40,13 +41,13 @@ public class GlobalMarketScreen extends Screen {
 
         int centerX = this.width / 2;
 
-        this.addRenderableWidget(Button.builder(Component.literal("Moje Sklepy"), button -> {
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.create_marketplace.global_market.my_shops"), button -> {
             if (this.minecraft != null) {
                 this.minecraft.setScreen(new MyShopsScreen(this, this.offers));
             }
         }).bounds(10, 10, 80, 20).build());
 
-        this.searchBox = new EditBox(this.font, centerX - 100, 10, 200, 20, Component.literal("Szukaj..."));
+        this.searchBox = new EditBox(this.font, centerX - 100, 10, 200, 20, Component.translatable("gui.create_marketplace.global_market.search"));
         this.searchBox.setResponder(s -> {
             this.scrollOffset = 0;
             this.rebuildWidgets();
@@ -59,17 +60,27 @@ public class GlobalMarketScreen extends Screen {
     @Override
     protected void rebuildWidgets() {
         this.clearWidgets();
+        this.searchBox.setX(this.width / 2 - 100);
         this.addRenderableWidget(this.searchBox);
-        this.addRenderableWidget(Button.builder(Component.literal("Moje Sklepy"), button -> {
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.create_marketplace.global_market.my_shops"), button -> {
             if (this.minecraft != null) {
                 this.minecraft.setScreen(new MyShopsScreen(this, this.offers));
             }
         }).bounds(10, 10, 80, 20).build());
 
+        int screenCenterX = this.width / 2;
+        this.addRenderableWidget(Button.builder(Component.translatable(showFavoritesOnly ? "gui.create_marketplace.global_market.favorites_only" : "gui.create_marketplace.global_market.all_shops"), button -> {
+            this.showFavoritesOnly = !this.showFavoritesOnly;
+            this.scrollOffset = 0;
+            this.rebuildWidgets();
+        }).bounds(screenCenterX + 110, 10, 80, 20).build());
+
         String query = this.searchBox.getValue().toLowerCase();
 
         List<MarketOffer> filtered = offers.stream()
                 .filter(o -> {
+                    if (showFavoritesOnly && !FavoritesManager.isFavorite(o.pos()))
+                        return false;
                     if (query.isEmpty())
                         return true;
                     boolean matchShop = o.shopName().toLowerCase().contains(query);
@@ -81,7 +92,9 @@ public class GlobalMarketScreen extends Screen {
                 .toList();
 
         Map<String, Map<String, List<MarketOffer>>> grouped = filtered.stream()
-                .collect(Collectors.groupingBy(MarketOffer::ownerName, Collectors.groupingBy(MarketOffer::shopName)));
+                .sorted((o1, o2) -> Boolean.compare(FavoritesManager.isFavorite(o2.pos()), FavoritesManager.isFavorite(o1.pos())))
+                .collect(Collectors.groupingBy(MarketOffer::ownerName, java.util.LinkedHashMap::new, 
+                        Collectors.groupingBy(MarketOffer::shopName, java.util.LinkedHashMap::new, Collectors.toList())));
 
         int centerX = this.width / 2;
         int y = 50 - scrollOffset;
@@ -123,16 +136,21 @@ public class GlobalMarketScreen extends Screen {
                         for (MarketOffer offer : shopEntry.getValue()) {
                             int oy = y;
                             if (oy > 35 && oy < this.height - 20) {
-                                this.addRenderableWidget(Button.builder(Component.literal("Nawiguj"), button -> {
+                                boolean isFav = FavoritesManager.isFavorite(offer.pos());
+                                this.addRenderableWidget(Button.builder(Component.literal(isFav ? "★" : "☆"), button -> {
+                                    FavoritesManager.toggleFavorite(offer.pos());
+                                    this.rebuildWidgets();
+                                }).bounds(centerX + 105, oy + 7, 25, 20).build());
+
+                                this.addRenderableWidget(Button.builder(Component.translatable("gui.create_marketplace.global_market.navigate"), button -> {
                                     XaeroCompat.addWaypoint(offer.shopName(), offer.pos().getX(), offer.pos().getY(),
                                             offer.pos().getZ());
                                     if (this.minecraft != null && this.minecraft.player != null) {
-                                        this.minecraft.player.sendSystemMessage(Component
-                                                .literal("Przesłano punkt '" + offer.shopName() + "' do Xaero's Minimap!")
+                                        this.minecraft.player.sendSystemMessage(Component.translatable("gui.create_marketplace.global_market.navigate_success", offer.shopName())
                                                 .withStyle(net.minecraft.ChatFormatting.GREEN));
                                         this.onClose();
                                     }
-                                }).bounds(centerX + 110, oy + 7, 60, 20).build());
+                                }).bounds(centerX + 135, oy + 7, 60, 20).build());
                             }
                             y += rowHeight;
                         }
@@ -149,7 +167,7 @@ public class GlobalMarketScreen extends Screen {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         if (offers.isEmpty()) {
-            guiGraphics.drawCenteredString(this.font, "Brak dostępnych ofert na rynku.", this.width / 2,
+            guiGraphics.drawCenteredString(this.font, Component.translatable("gui.create_marketplace.global_market.no_offers"), this.width / 2,
                     this.height / 2, 0xAAAAAA);
             return;
         }
@@ -157,6 +175,8 @@ public class GlobalMarketScreen extends Screen {
         String query = this.searchBox.getValue().toLowerCase();
         List<MarketOffer> filtered = offers.stream()
                 .filter(o -> {
+                    if (showFavoritesOnly && !FavoritesManager.isFavorite(o.pos()))
+                        return false;
                     if (query.isEmpty())
                         return true;
                     boolean matchShop = o.shopName().toLowerCase().contains(query);
@@ -168,7 +188,9 @@ public class GlobalMarketScreen extends Screen {
                 .toList();
 
         Map<String, Map<String, List<MarketOffer>>> grouped = filtered.stream()
-                .collect(Collectors.groupingBy(MarketOffer::ownerName, Collectors.groupingBy(MarketOffer::shopName)));
+                .sorted((o1, o2) -> Boolean.compare(FavoritesManager.isFavorite(o2.pos()), FavoritesManager.isFavorite(o1.pos())))
+                .collect(Collectors.groupingBy(MarketOffer::ownerName, java.util.LinkedHashMap::new, 
+                        Collectors.groupingBy(MarketOffer::shopName, java.util.LinkedHashMap::new, Collectors.toList())));
 
         int centerX = this.width / 2;
         int y = 50 - scrollOffset;
@@ -179,7 +201,7 @@ public class GlobalMarketScreen extends Screen {
             boolean pExpanded = expandedPlayers.getOrDefault(playerName, true);
 
             if (y > 20 && y < this.height) {
-                guiGraphics.drawString(this.font, "Gracz: " + playerName, centerX - 155, y + 4, 0xFFD700);
+                guiGraphics.drawString(this.font, Component.translatable("gui.create_marketplace.global_market.player", playerName), centerX - 155, y + 4, 0xFFD700);
             }
             y += 20;
 
@@ -190,7 +212,7 @@ public class GlobalMarketScreen extends Screen {
                     boolean sExpanded = expandedShops.getOrDefault(shopKey, true);
 
                     if (y > 20 && y < this.height) {
-                        guiGraphics.drawString(this.font, "Sklep: " + shopName, centerX - 135, y + 4, 0x55FF55);
+                        guiGraphics.drawString(this.font, Component.translatable("gui.create_marketplace.global_market.shop", shopName), centerX - 135, y + 4, 0x55FF55);
                     }
                     y += 20;
 

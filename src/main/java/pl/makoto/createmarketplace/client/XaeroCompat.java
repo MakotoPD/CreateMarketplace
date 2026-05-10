@@ -1,6 +1,7 @@
 package pl.makoto.createmarketplace.client;
 
 import net.neoforged.fml.ModList;
+import pl.makoto.createmarketplace.MarketConfig;
 
 public class XaeroCompat {
     public static void addWaypoint(String name, int x, int y, int z) {
@@ -17,11 +18,18 @@ public class XaeroCompat {
             // XaeroMinimapSession.getCurrentSession().getWaypointsManager().getWaypoints().getList().add(w);
             
             Class<?> waypointClass = Class.forName("xaero.common.minimap.waypoints.Waypoint");
+            
             String symbol = "🛒";
+            MarketConfig.WaypointSymbolMode mode = MarketConfig.WAYPOINT_SYMBOL_MODE.get();
+            if (mode == MarketConfig.WaypointSymbolMode.FIRST_LETTER && name != null && !name.isEmpty()) {
+                symbol = name.substring(0, 1).toUpperCase();
+            } else if (mode == MarketConfig.WaypointSymbolMode.CUSTOM) {
+                symbol = MarketConfig.CUSTOM_WAYPOINT_SYMBOL.get();
+            }
             
             Object waypoint = waypointClass.getConstructor(
                     int.class, int.class, int.class, String.class, String.class, int.class, int.class, boolean.class
-            ).newInstance(x, y, z, name, symbol, 1, 0, false); // 1 = kolor (np. żółty), 0 = typ, false = czy tymczasowy
+            ).newInstance(x, y, z, name, symbol, 1, 0, false);
 
             Class<?> sessionClass = Class.forName("xaero.common.XaeroMinimapSession");
             Object session = sessionClass.getMethod("getCurrentSession").invoke(null);

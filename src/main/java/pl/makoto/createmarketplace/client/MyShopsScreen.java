@@ -20,7 +20,7 @@ public class MyShopsScreen extends Screen {
     private int maxScroll = 0;
 
     public MyShopsScreen(Screen parent, List<MarketOffer> offers) {
-        super(Component.literal("Moje Sklepy"));
+        super(Component.translatable("gui.create_marketplace.my_shops.title"));
         this.parent = parent;
         this.offers = offers;
     }
@@ -37,7 +37,7 @@ public class MyShopsScreen extends Screen {
 
         int centerX = this.width / 2;
 
-        this.addRenderableWidget(Button.builder(Component.literal("Wróć"), button -> {
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.create_marketplace.global_market.back"), button -> {
             if (this.minecraft != null) {
                 if (parent instanceof GlobalMarketScreen gm) {
                     gm.updateOffers(this.offers); // żeby przekazać ewentualne usunięcia
@@ -66,7 +66,7 @@ public class MyShopsScreen extends Screen {
 
             // Przycisk usunięcia CAŁEGO sklepu
             if (y > 30 && y < this.height - 20) {
-                this.addRenderableWidget(Button.builder(Component.literal("Usuń Sklep"), button -> {
+                this.addRenderableWidget(Button.builder(Component.translatable("gui.create_marketplace.my_shops.delete"), button -> {
                     PacketDistributor.sendToServer(new DeleteShopPayload(Optional.empty(), Optional.of(shopName)));
                 }).bounds(centerX + 100, y + 5, 80, 20).build());
             }
@@ -107,7 +107,7 @@ public class MyShopsScreen extends Screen {
                 .toList();
 
         if (myOffers.isEmpty()) {
-            guiGraphics.drawCenteredString(this.font, "Nie posiadasz żadnych sklepów.", this.width / 2, this.height / 2, 0xAAAAAA);
+            guiGraphics.drawCenteredString(this.font, Component.translatable("gui.create_marketplace.my_shops.no_shops"), this.width / 2, this.height / 2, 0xAAAAAA);
             return;
         }
 
@@ -123,8 +123,8 @@ public class MyShopsScreen extends Screen {
             List<MarketOffer> shopOffers = entry.getValue();
 
             if (y > 20 && y < this.height) {
-                guiGraphics.drawString(this.font, "Sklep: " + shopName, centerX - 180, y + 10, 0x55FF55);
-                guiGraphics.drawString(this.font, "Bloków: " + shopOffers.size(), centerX - 20, y + 10, 0xAAAAAA);
+                guiGraphics.drawString(this.font, Component.translatable("gui.create_marketplace.global_market.shop", shopName), centerX - 180, y + 10, 0x55FF55);
+                guiGraphics.drawString(this.font, Component.translatable("gui.create_marketplace.my_shops.blocks", shopOffers.size()), centerX - 20, y + 10, 0xAAAAAA);
             }
 
             y += 30;
@@ -142,8 +142,8 @@ public class MyShopsScreen extends Screen {
                     String currencyAmount = offer.currency().isEmpty() ? "" : offer.currency().getCount() + "x ";
 
                     guiGraphics.drawString(this.font, itemName, centerX - 145, y + 5, 0xFFFFFF);
-                    guiGraphics.drawString(this.font, "Cena: " + currencyAmount + currencyName, centerX - 145, y + 15, 0xAAAAAA);
-                    guiGraphics.drawString(this.font, "Poz: " + offer.pos().toShortString(), centerX - 145, y + 25, 0x777777);
+                    guiGraphics.drawString(this.font, Component.translatable("gui.create_marketplace.my_shops.price", currencyAmount + currencyName), centerX - 145, y + 15, 0xAAAAAA);
+                    guiGraphics.drawString(this.font, Component.translatable("gui.create_marketplace.my_shops.pos", offer.pos().toShortString()), centerX - 145, y + 25, 0x777777);
 
                     if (mouseX >= centerX - 170 && mouseX <= centerX - 170 + 16 && mouseY >= y + 10 && mouseY <= y + 10 + 16) {
                         guiGraphics.renderTooltip(this.font, offer.item(), mouseX, mouseY);

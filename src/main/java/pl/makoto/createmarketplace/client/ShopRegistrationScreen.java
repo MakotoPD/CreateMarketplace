@@ -20,7 +20,7 @@ public class ShopRegistrationScreen extends Screen {
     private EditBox nameEditBox;
 
     public ShopRegistrationScreen(BlockPos pos, ItemStack item, ItemStack currency, java.util.List<String> existingShops) {
-        super(Component.literal("Rejestracja Sklepu"));
+        super(Component.translatable("gui.create_marketplace.registration.title"));
         this.pos = pos;
         this.item = item;
         this.currency = currency;
@@ -36,11 +36,11 @@ public class ShopRegistrationScreen extends Screen {
         int centerX = this.width / 2;
         int centerY = this.height / 2;
 
-        this.nameEditBox = new EditBox(this.font, centerX - boxWidth / 2, centerY - 20, boxWidth, boxHeight, Component.literal("Nazwa sklepu"));
+        this.nameEditBox = new EditBox(this.font, centerX - boxWidth / 2, centerY - 20, boxWidth, boxHeight, Component.translatable("gui.create_marketplace.registration.name"));
         this.nameEditBox.setMaxLength(50);
         this.addRenderableWidget(this.nameEditBox);
 
-        this.addRenderableWidget(Button.builder(Component.literal("Opublikuj"), button -> {
+        this.addRenderableWidget(Button.builder(Component.translatable("gui.create_marketplace.registration.publish"), button -> {
             String shopName = this.nameEditBox.getValue();
             if (!shopName.trim().isEmpty() && this.minecraft != null && this.minecraft.player != null) {
                 String ownerName = this.minecraft.player.getName().getString();
@@ -60,7 +60,7 @@ public class ShopRegistrationScreen extends Screen {
 
         if (!existingShops.isEmpty()) {
             int yOffset = centerY + 45;
-            this.addRenderableWidget(new net.minecraft.client.gui.components.StringWidget(centerX - 100, yOffset - 12, 200, 10, Component.literal("§7Dodaj do istniejącego sklepu:"), this.font));
+            this.addRenderableWidget(new net.minecraft.client.gui.components.StringWidget(centerX - 100, yOffset - 12, 200, 10, Component.translatable("gui.create_marketplace.registration.add_to_existing").withStyle(net.minecraft.ChatFormatting.GRAY), this.font));
             
             int btnX = centerX - 100;
             for (int i = 0; i < Math.min(existingShops.size(), 4); i++) {

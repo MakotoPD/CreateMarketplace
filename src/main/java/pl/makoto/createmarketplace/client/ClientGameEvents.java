@@ -3,9 +3,10 @@ package pl.makoto.createmarketplace.client;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import pl.makoto.createmarketplace.CreateMarketplace;
 
-@EventBusSubscriber(modid = CreateMarketplace.MODID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+@EventBusSubscriber(modid = CreateMarketplace.MODID, bus = Bus.GAME, value = Dist.CLIENT)
 public class ClientGameEvents {
     @SubscribeEvent
     public static void onClientTick(net.neoforged.neoforge.client.event.ClientTickEvent.Post event) {

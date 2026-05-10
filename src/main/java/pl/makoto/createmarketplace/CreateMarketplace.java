@@ -23,8 +23,10 @@ public class CreateMarketplace {
             })
             .build());
 
-    public CreateMarketplace(IEventBus modEventBus) {
+    public CreateMarketplace(IEventBus modEventBus, net.neoforged.fml.ModContainer modContainer) {
         ItemRegistry.ITEMS.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
+        
+        modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.COMMON, MarketConfig.COMMON_SPEC);
     }
 }

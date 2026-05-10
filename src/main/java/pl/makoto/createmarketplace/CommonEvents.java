@@ -10,11 +10,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import pl.makoto.createmarketplace.registry.ItemRegistry;
 import pl.makoto.createmarketplace.util.ShopScanner;
 
-@EventBusSubscriber(modid = CreateMarketplace.MODID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = CreateMarketplace.MODID, bus = Bus.GAME)
 public class CommonEvents {
 
     @SubscribeEvent

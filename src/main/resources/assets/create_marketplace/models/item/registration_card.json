@@ -2,5 +2,27 @@
   "parent": "item/generated",
   "textures": {
     "layer0": "create_marketplace:item/registration_card"
+  },
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [0, 90, -35],
+      "translation": [0, 1.25, -3.5],
+      "scale": [0.55, 0.55, 0.55]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [0, 90, -35],
+      "translation": [0, 1.25, -3.5],
+      "scale": [0.55, 0.55, 0.55]
+    },
+    "firstperson_righthand": {
+      "rotation": [0, -45, 25],
+      "translation": [0, 3, 2],
+      "scale": [0.5, 0.5, 0.5]
+    },
+    "firstperson_lefthand": {
+      "rotation": [0, -45, 25],
+      "translation": [0, 3, 2],
+      "scale": [0.5, 0.5, 0.5]
+    }
   }
 }

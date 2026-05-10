@@ -1,0 +1,34 @@
+{
+  "item.create_marketplace.registration_card": "Karta Rejestracyjna",
+  "key.createmarketplace.open_market": "Otwórz Globalny Rynek",
+  "key.categories.createmarketplace": "Create: Marketplace",
+  "itemGroup.create_marketplace": "Create: Marketplace",
+  
+  "gui.create_marketplace.global_market.title": "Globalny Rynek",
+  "gui.create_marketplace.global_market.my_shops": "Moje Sklepy",
+  "gui.create_marketplace.global_market.search": "Szukaj...",
+  "gui.create_marketplace.global_market.no_offers": "Brak dostępnych ofert na rynku.",
+  "gui.create_marketplace.global_market.player": "Gracz: %s",
+  "gui.create_marketplace.global_market.shop": "Sklep: %s",
+  "gui.create_marketplace.global_market.navigate": "Nawiguj",
+  "gui.create_marketplace.global_market.navigate_success": "Przesłano punkt '%s' do Xaero's Minimap!",
+  "gui.create_marketplace.global_market.favorites_only": "★ Ulubione",
+  "gui.create_marketplace.global_market.all_shops": "☆ Wszystkie",
+  "gui.create_marketplace.global_market.back": "Wróć",
+  
+  "gui.create_marketplace.registration.title": "Rejestracja Sklepu",
+  "gui.create_marketplace.registration.publish": "Opublikuj",
+  "gui.create_marketplace.registration.name": "Nazwa sklepu",
+  "gui.create_marketplace.registration.add_to_existing": "Dodaj do istniejącego sklepu:",
+  
+  "gui.create_marketplace.my_shops.title": "Moje Sklepy",
+  "gui.create_marketplace.my_shops.delete": "Usuń",
+  "gui.create_marketplace.my_shops.no_shops": "Nie posiadasz żadnych sklepów.",
+  "gui.create_marketplace.my_shops.blocks": "Bloków: %s",
+  "gui.create_marketplace.my_shops.price": "Cena: %s",
+  "gui.create_marketplace.my_shops.pos": "Poz: %s",
+  
+  "message.create_marketplace.registration_success": "Serwer pomyślnie zarejestrował Twój sklep: %s",
+  "message.create_marketplace.no_card": "Nie posiadasz Karty Rejestracyjnej w ekwipunku!",
+  "message.create_marketplace.delete_success": "Pomyślnie usunięto sklep(y)."
+}
