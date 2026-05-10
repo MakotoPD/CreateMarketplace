@@ -65,7 +65,6 @@ Located in `config/create_marketplace-common.toml`:
 ## 🔨 Developers & Contributors
 
 *   **Author:** MakotoPD
-*   **AI Partner:** Antigravity (Advanced Agentic Coding)
 *   **License:** GNU GPL v3
 
 ---
