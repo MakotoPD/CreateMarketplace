@@ -23,8 +23,8 @@ public class CommonEvents {
         Player player = event.getEntity();
         ItemStack stack = event.getItemStack();
         
-        // 1. Działamy TYLKO jeśli gracz trzyma naszą kartę
-        if (!stack.is(ItemRegistry.REGISTRATION_CARD.get())) {
+        // 1. Działamy tylko jeśli gracz trzyma kartę lub papier debugujący
+        if (!stack.is(ItemRegistry.REGISTRATION_CARD.get()) && !stack.is(ItemRegistry.DEBUG_PAPER.get())) {
             return;
         }
 
@@ -33,6 +33,17 @@ public class CommonEvents {
         BlockEntity be = level.getBlockEntity(pos);
 
         if (be == null) return;
+
+        if (player.getItemInHand(event.getHand()).is(ItemRegistry.DEBUG_PAPER.get())) {
+            event.setCanceled(true);
+            event.setCancellationResult(InteractionResult.SUCCESS);
+            if (!level.isClientSide()) {
+                CompoundTag nbt = be.saveWithFullMetadata(level.registryAccess());
+                player.sendSystemMessage(Component.literal("§e[Debug Paper] §fData for §6" + be.getClass().getSimpleName() + "§f at §7" + pos.toShortString() + ":"));
+                player.sendSystemMessage(Component.literal(nbt.toString()));
+            }
+            return;
+        }
 
         String fullClassName = be.getClass().getName();
         boolean isVendor = fullClassName.contains("VendorBlockEntity");
@@ -122,6 +133,14 @@ public class CommonEvents {
                 }
                 if (nbt.contains("Filter")) {
                     currencyItem = ItemStack.parseOptional(level.registryAccess(), nbt.getCompound("Filter"));
+                    // Nowa logika: Numismatics 1.21.1 używa "FilterAmount" dla Table Cloth
+                    if (nbt.contains("FilterAmount")) {
+                        currencyItem.setCount(nbt.getInt("FilterAmount"));
+                    } else if (nbt.contains("Price")) {
+                        currencyItem.setCount(nbt.getInt("Price"));
+                    } else if (nbt.contains("price")) {
+                        currencyItem.setCount(nbt.getInt("price"));
+                    }
                 }
             }
 

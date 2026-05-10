@@ -20,6 +20,7 @@ public class CreateMarketplace {
             .icon(() -> new net.minecraft.world.item.ItemStack(ItemRegistry.REGISTRATION_CARD.get()))
             .displayItems((parameters, output) -> {
                 output.accept(ItemRegistry.REGISTRATION_CARD.get());
+                output.accept(ItemRegistry.DEBUG_PAPER.get());
             })
             .build());
 
