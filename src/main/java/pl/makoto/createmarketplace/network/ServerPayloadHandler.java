@@ -8,9 +8,13 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import pl.makoto.createmarketplace.data.MarketDatabase;
 import pl.makoto.createmarketplace.data.MarketOffer;
 
+import com.mojang.logging.LogUtils;
+import org.slf4j.Logger;
+
 import java.util.List;
 
 public class ServerPayloadHandler {
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     public static void handlePublishShop(final PublishShopPayload payload, final IPayloadContext context) {
         context.enqueueWork(() -> {
@@ -41,7 +45,7 @@ public class ServerPayloadHandler {
                     MarketDatabase db = MarketDatabase.get(player.server);
                     db.addOffer(payload.offer());
                     
-                    System.out.println("Serwer otrzymał i zapisał ofertę na sklep: " + payload.offer().shopName());
+                    LOGGER.info("Server received and saved offer for shop: {}", payload.offer().shopName());
                     player.sendSystemMessage(Component.translatable("message.create_marketplace.registration_success", payload.offer().shopName()).withStyle(net.minecraft.ChatFormatting.GREEN));
                     
                     // Rozsyłamy odświeżoną listę do wszystkich podłączonych graczy
@@ -62,7 +66,7 @@ public class ServerPayloadHandler {
                 // Wysyłamy do gracza, który zażądał odświeżenia
                 PacketDistributor.sendToPlayer(player, new MarketUpdatePayload(offers));
                 
-                System.out.println("Serwer wysłał " + offers.size() + " ofert do gracza " + player.getName().getString());
+                LOGGER.info("Server sent {} offers to player {}", offers.size(), player.getName().getString());
             }
         });
     }

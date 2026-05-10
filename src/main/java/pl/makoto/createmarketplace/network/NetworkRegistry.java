@@ -33,17 +33,26 @@ public class NetworkRegistry {
                 ServerPayloadHandler::handleDeleteShop
         );
 
-        // Pakiety S2C (Od serwera do klienta)
+        // Pakiety S2C (Od serwera do klienta) - rejestrowane na obu stronach dla kompatybilności kanałów,
+        // ale logika handlera jest wywoływana tylko na kliencie.
         registrar.playToClient(
                 MarketUpdatePayload.TYPE,
                 MarketUpdatePayload.STREAM_CODEC,
-                ClientPayloadHandler::handleMarketUpdate
+                (payload, context) -> {
+                    if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
+                        ClientPayloadHandler.handleMarketUpdate(payload, context);
+                    }
+                }
         );
 
         registrar.playToClient(
                 OpenRegistrationGuiPayload.TYPE,
                 OpenRegistrationGuiPayload.STREAM_CODEC,
-                ClientPayloadHandler::handleOpenRegistrationGui
+                (payload, context) -> {
+                    if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
+                        ClientPayloadHandler.handleOpenRegistrationGui(payload, context);
+                    }
+                }
         );
     }
 }
