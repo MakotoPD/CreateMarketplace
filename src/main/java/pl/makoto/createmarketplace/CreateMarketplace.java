@@ -36,6 +36,7 @@ public class CreateMarketplace {
             CREATIVE_MODE_TABS.register(modEventBus);
             
             modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.COMMON, MarketConfig.COMMON_SPEC);
+            modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.CLIENT, MarketConfig.CLIENT_SPEC);
             
             modEventBus.addListener(this::commonSetup);
             

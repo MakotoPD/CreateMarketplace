@@ -31,6 +31,14 @@ repositories {
         name = "Modrinth"
         url = "https://api.modrinth.com/maven"
     }
+    maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/"
+    }
+    maven {
+        name = "BlameJared"
+        url = "https://maven.blamejared.com"
+    }
 }
 
 base {
@@ -123,6 +131,14 @@ configurations {
 dependencies {
     // Numismatics pobierany z lokalnego folderu libs/
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // JEI
+    compileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.21.0.247"
+    runtimeOnly "mezz.jei:jei-1.21.1-neoforge:19.21.0.247"
+
+    // EMI
+    compileOnly "dev.emi:emi-neoforge:${emi_version}"
+    runtimeOnly "dev.emi:emi-neoforge:${emi_version}"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
