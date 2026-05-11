@@ -45,20 +45,19 @@ public class CommonEvents {
             return;
         }
 
-        String fullClassName = be.getClass().getName();
-        boolean isVendor = fullClassName.contains("VendorBlockEntity");
-        boolean isTableCloth = fullClassName.contains("TableClothBlockEntity");
+        // Wykorzystujemy API do rozpoznania sklepu
+        java.util.Optional<pl.makoto.createmarketplace.api.ShopResult> shopResult = pl.makoto.createmarketplace.api.MarketApi.resolveShop(be, level, pos);
 
-        if (!isVendor && !isTableCloth) {
+        if (shopResult.isEmpty()) {
             return;
         }
 
-        // 2. Jeśli kuca, pozwalamy na normalną interakcję bloku (menu Numismatics)
+        // 2. Jeśli kuca, pozwalamy na normalną interakcję bloku (menu Numismatics/inne)
         if (player.isCrouching()) {
             return;
         }
 
-        // 3. Jeśli to sklep i trzymamy kartę (bez Shifta), przejmujemy zdarzenie dla rejestracji
+        // 3. Przejmujemy zdarzenie dla rejestracji
         event.setCanceled(true);
         event.setCancellationResult(InteractionResult.SUCCESS);
 
@@ -68,81 +67,8 @@ public class CommonEvents {
 
         // --- LOGIKA SERWEROWA ---
         try {
-            ItemStack sellingItem = ItemStack.EMPTY;
-            ItemStack currencyItem = ItemStack.EMPTY;
-
-            CompoundTag nbt = be.saveWithFullMetadata(level.registryAccess());
-
-            if (isVendor) {
-                // 1. Wyciągamy przedmiot bezpośrednio z tagu "Selling" (format 1.21.1)
-                if (nbt.contains("Selling", 10)) {
-                    sellingItem = ItemStack.parseOptional(level.registryAccess(), nbt.getCompound("Selling"));
-                } else {
-                    // Fallback do skanowania rekurencyjnego
-                    sellingItem = ShopScanner.findItemStackRecursive(be, 3);
-                }
-
-                // 2. Wyciągamy cenę z nowego formatu (CompoundTag zamiast ListTag)
-                if (nbt.contains("Prices", 10)) {
-                    CompoundTag prices = nbt.getCompound("Prices");
-                    // Szukamy najwyższej monety (hierarchia Numismatics 1.21.1)
-                    String[] coinNames = {"sun", "crown", "cog", "sprocket", "bevel", "spur"};
-                    for (String coinName : coinNames) {
-                        if (prices.contains(coinName) && prices.getInt(coinName) > 0) {
-                            currencyItem = ShopScanner.getCoinItemByName(coinName, prices.getInt(coinName));
-                            break;
-                        }
-                    }
-                }
-            } else if (isTableCloth) {
-                sellingItem = ShopScanner.invokeMethodReturningItemStack(be, "getSellingItem")
-                        .or(() -> ShopScanner.invokeMethodReturningItemStack(be, "getFilterItem"))
-                        .or(() -> {
-                            try {
-                                java.lang.reflect.Method m = be.getClass().getMethod("getItemsForRender");
-                                Object result = m.invoke(be);
-                                if (result instanceof Iterable<?> iterable) {
-                                    for (Object o : iterable) {
-                                        if (o instanceof ItemStack rs && !rs.isEmpty())
-                                            return java.util.Optional.of(rs.copy());
-                                    }
-                                }
-                            } catch (Exception ignored) {}
-                            return java.util.Optional.empty();
-                        })
-                        .orElse(ItemStack.EMPTY);
-
-                if (sellingItem.isEmpty() && nbt.contains("RequestData")) {
-                    CompoundTag requestData = nbt.getCompound("RequestData");
-                    if (requestData.contains("encoded_request")) {
-                        CompoundTag encodedRequest = requestData.getCompound("encoded_request");
-                        if (encodedRequest.contains("ordered_stacks")) {
-                            CompoundTag orderedStacks = encodedRequest.getCompound("ordered_stacks");
-                            if (orderedStacks.contains("entries")) {
-                                net.minecraft.nbt.ListTag entries = orderedStacks.getList("entries", 10);
-                                if (!entries.isEmpty()) {
-                                    CompoundTag entry = entries.getCompound(0);
-                                    if (entry.contains("item_stack")) {
-                                        sellingItem = ItemStack.parseOptional(level.registryAccess(),
-                                                entry.getCompound("item_stack"));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                if (nbt.contains("Filter")) {
-                    currencyItem = ItemStack.parseOptional(level.registryAccess(), nbt.getCompound("Filter"));
-                    // Nowa logika: Numismatics 1.21.1 używa "FilterAmount" dla Table Cloth
-                    if (nbt.contains("FilterAmount")) {
-                        currencyItem.setCount(nbt.getInt("FilterAmount"));
-                    } else if (nbt.contains("Price")) {
-                        currencyItem.setCount(nbt.getInt("Price"));
-                    } else if (nbt.contains("price")) {
-                        currencyItem.setCount(nbt.getInt("price"));
-                    }
-                }
-            }
+            ItemStack sellingItem = shopResult.get().sellingItem();
+            ItemStack currencyItem = shopResult.get().currencyItem();
 
             if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
                 java.util.List<String> existingShops = new java.util.ArrayList<>();

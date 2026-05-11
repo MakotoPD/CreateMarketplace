@@ -62,6 +62,61 @@ Located in `config/create_marketplace-common.toml`:
 
 ---
 
+## 🔌 Developers & API
+
+Create: Marketplace provides a simple API for other modders to add support for their custom shop blocks.
+
+### Dependency
+To use the API, add the Modrinth Maven to your `build.gradle` and then add the dependency:
+
+```gradle
+repositories {
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+    }
+}
+
+dependencies {
+    // Replace 0.1.1 with the version you want to use
+    implementation "maven.modrinth:create-marketplace:0.1.1"
+}
+```
+
+### Adding Custom Shop Support
+Implement `IShopHandler` and register it to support custom blocks:
+
+```java
+MarketApi.registerHandler(new MyCustomShopHandler());
+```
+
+### Market Events (NeoForge)
+You can listen to market activities using the NeoForge event bus:
+
+```java
+@SubscribeEvent
+public void onOfferRegistering(MarketOfferEvent.Register event) {
+    // Cancel registration if needed
+    if (isPlayerBanned(event.getPlayer())) {
+        event.setCanceled(true);
+    }
+}
+
+@SubscribeEvent
+public void onOfferRegistered(MarketOfferEvent.Registered event) {
+    System.out.println("New shop registered: " + event.getOffer().shopName());
+}
+```
+
+### Querying the Market
+Access the global list of offers directly:
+
+```java
+List<MarketOffer> allOffers = MarketApi.getOffers(server);
+```
+
+---
+
 ## 🔨 Developers & Contributors
 
 *   **Author:** MakotoPD

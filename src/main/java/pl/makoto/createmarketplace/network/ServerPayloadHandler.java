@@ -43,7 +43,18 @@ public class ServerPayloadHandler {
 
                 if (hasCard) {
                     MarketDatabase db = MarketDatabase.get(player.server);
+                    
+                    // Fire Register event (cancelable)
+                    pl.makoto.createmarketplace.api.event.MarketOfferEvent.Register event = new pl.makoto.createmarketplace.api.event.MarketOfferEvent.Register(payload.offer(), player);
+                    if (net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled()) {
+                        player.sendSystemMessage(Component.literal("Registration cancelled by another mod.").withStyle(net.minecraft.ChatFormatting.RED));
+                        return;
+                    }
+
                     db.addOffer(payload.offer());
+                    
+                    // Fire Registered event
+                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new pl.makoto.createmarketplace.api.event.MarketOfferEvent.Registered(payload.offer(), player));
                     
                     LOGGER.info("Server received and saved offer for shop: {}", payload.offer().shopName());
                     player.sendSystemMessage(Component.translatable("message.create_marketplace.registration_success", payload.offer().shopName()).withStyle(net.minecraft.ChatFormatting.GREEN));
@@ -83,16 +94,23 @@ public class ServerPayloadHandler {
                     db.getOffers().stream()
                         .filter(o -> o.pos().equals(pos) && o.ownerId().equals(player.getUUID()))
                         .findFirst()
-                        .ifPresent(offer -> db.removeOffer(pos));
+                        .ifPresent(offer -> {
+                            db.removeOffer(pos);
+                            // Fire Removed event
+                            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new pl.makoto.createmarketplace.api.event.MarketOfferEvent.Removed(offer, player));
+                        });
                     changed = true;
                 } else if (payload.shopNameToRemove().isPresent()) {
                     String shopName = payload.shopNameToRemove().get();
                     // Usuwamy wszystkie oferty gracza o danej nazwie
                     db.getOffers().stream()
                         .filter(o -> o.shopName().equals(shopName) && o.ownerId().equals(player.getUUID()))
-                        .map(MarketOffer::pos)
                         .toList() // kopiujemy do listy, żeby uniknąć ConcurrentModificationException
-                        .forEach(db::removeOffer);
+                        .forEach(offer -> {
+                            db.removeOffer(offer.pos());
+                            // Fire Removed event
+                            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new pl.makoto.createmarketplace.api.event.MarketOfferEvent.Removed(offer, player));
+                        });
                     changed = true;
                 }
                 

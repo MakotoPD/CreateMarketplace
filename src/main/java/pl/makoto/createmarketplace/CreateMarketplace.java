@@ -38,6 +38,9 @@ public class CreateMarketplace {
             modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.COMMON, MarketConfig.COMMON_SPEC);
             modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.CLIENT, MarketConfig.CLIENT_SPEC);
             
+            // Rejestracja domyślnych handlerów API
+            pl.makoto.createmarketplace.api.MarketApi.registerHandler(new pl.makoto.createmarketplace.api.impl.NumismaticsShopHandler());
+            
             modEventBus.addListener(this::commonSetup);
             
             LOGGER.info(">>> Create: Marketplace core components registered.");

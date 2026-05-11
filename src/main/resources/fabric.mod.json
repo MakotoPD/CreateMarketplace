@@ -1,8 +1,9 @@
 {
   "schemaVersion": 1,
   "id": "create_marketplace",
-  "version": "${version}",
+  "version": "${mod_version}",
   "name": "Create: Marketplace",
+  "icon": "logo.png",
   "entrypoints": {
     "emi": [
       "pl.makoto.createmarketplace.client.integration.MarketEmiPlugin"
