@@ -78,8 +78,8 @@ repositories {
 }
 
 dependencies {
-    // Replace 0.1.1 with the version you want to use
-    implementation "maven.modrinth:create-marketplace:0.1.1"
+    // Replace 0.2.0 with the version you want to use
+    implementation "maven.modrinth:create-marketplace:0.2.0"
 }
 ```
 
