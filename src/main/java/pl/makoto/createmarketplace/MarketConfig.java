@@ -10,6 +10,7 @@ public class MarketConfig {
     public static final ModConfigSpec.EnumValue<WaypointSymbolMode> WAYPOINT_SYMBOL_MODE;
     public static final ModConfigSpec.ConfigValue<String> CUSTOM_WAYPOINT_SYMBOL;
     public static final ModConfigSpec.BooleanValue USE_CARD_DURABILITY;
+    public static final ModConfigSpec.IntValue MAX_OFFERS_PER_PLAYER;
 
     // Client
     public static final ModConfigSpec.EnumValue<ButtonPosition> BUTTON_POSITION;
@@ -36,6 +37,11 @@ public class MarketConfig {
                 .comment("Should the Registration Card lose durability on use?",
                          "If false, the card has infinite uses.")
                 .define("useCardDurability", true);
+
+        MAX_OFFERS_PER_PLAYER = commonBuilder
+                .comment("Maximum number of marketplace offers a single player can have.",
+                         "Set to a high value to effectively disable the limit.")
+                .defineInRange("maxOffersPerPlayer", 100, 1, 10000);
 
         commonBuilder.pop();
         COMMON_SPEC = commonBuilder.build();

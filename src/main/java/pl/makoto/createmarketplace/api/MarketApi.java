@@ -8,16 +8,16 @@ import net.minecraft.server.MinecraftServer;
 import pl.makoto.createmarketplace.data.MarketDatabase;
 import pl.makoto.createmarketplace.data.MarketOffer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Główna klasa API dla Create: Marketplace.
  * Pozwala na rejestrację handlerów wspierających różne typy sklepów oraz dostęp do bazy ofert.
  */
 public class MarketApi {
-    private static final List<IShopHandler> HANDLERS = new ArrayList<>();
+    private static final List<IShopHandler> HANDLERS = new CopyOnWriteArrayList<>();
 
     /**
      * Rejestruje nowy handler sklepu. 

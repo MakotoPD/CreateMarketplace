@@ -1,13 +1,16 @@
 package pl.makoto.createmarketplace.client;
 
+import com.mojang.logging.LogUtils;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.EventBusSubscriber.Bus;
+import org.slf4j.Logger;
 import pl.makoto.createmarketplace.CreateMarketplace;
 
 @EventBusSubscriber(modid = CreateMarketplace.MODID, value = Dist.CLIENT)
 public class ClientGameEvents {
+    private static final Logger LOGGER = LogUtils.getLogger();
     @SubscribeEvent
     public static void onClientTick(net.neoforged.neoforge.client.event.ClientTickEvent.Post event) {
         net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
@@ -15,7 +18,7 @@ public class ClientGameEvents {
             while (ClientEvents.OPEN_MARKET_KEY.consumeClick()) {
                 if (mc.screen == null) {
                     net.neoforged.neoforge.network.PacketDistributor.sendToServer(new pl.makoto.createmarketplace.network.RequestMarketRefreshPayload());
-                    mc.setScreen(new GlobalMarketScreen(java.util.Collections.emptyList()));
+                    mc.setScreen(new GlobalMarketScreen(pl.makoto.createmarketplace.network.ClientPayloadHandler.getCachedOffers()));
                 }
             }
         }
@@ -24,8 +27,7 @@ public class ClientGameEvents {
     @SubscribeEvent
     public static void onScreenInit(net.neoforged.neoforge.client.event.ScreenEvent.Init.Post event) {
         if (event.getScreen() instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> screen) {
-            // Logowanie do konsoli
-            System.out.println("[CreateMarketplace] Screen init: " + screen.getClass().getSimpleName());
+            LOGGER.debug("Screen init: {}", screen.getClass().getSimpleName());
 
             // Dynamiczne pozycjonowanie na podstawie obecności EMI i konfiguracji
             int x, y;
@@ -57,7 +59,7 @@ public class ClientGameEvents {
                 net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
                 if (mc.player != null) {
                     net.neoforged.neoforge.network.PacketDistributor.sendToServer(new pl.makoto.createmarketplace.network.RequestMarketRefreshPayload());
-                    mc.setScreen(new pl.makoto.createmarketplace.client.GlobalMarketScreen(java.util.Collections.emptyList()));
+                    mc.setScreen(new pl.makoto.createmarketplace.client.GlobalMarketScreen(pl.makoto.createmarketplace.network.ClientPayloadHandler.getCachedOffers()));
                 }
             });
 

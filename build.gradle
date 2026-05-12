@@ -27,6 +27,7 @@ sourceSets.main.resources {
 }
 
 repositories {
+    mavenCentral()
     maven {
         name = "Modrinth"
         url = "https://api.modrinth.com/maven"
@@ -139,6 +140,11 @@ dependencies {
     // EMI
     compileOnly "dev.emi:emi-neoforge:${emi_version}"
     runtimeOnly "dev.emi:emi-neoforge:${emi_version}"
+
+    // Testing
+    testImplementation 'net.jqwik:jqwik:1.9.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 // Przetwarzanie dodatkowych plików metadanych (np. fabric.mod.json dla EMI/Launcherów)
@@ -196,6 +202,21 @@ publishing {
             url "file://${project.projectDir}/repo"
         }
     }
+}
+
+// Configure test source set to access main source classes
+sourceSets {
+    test {
+        java {
+            srcDir 'src/test/java'
+        }
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += sourceSets.main.output + sourceSets.main.runtimeClasspath
+    }
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
 }
 
 tasks.withType(JavaCompile).configureEach {

@@ -1,5 +1,6 @@
 package pl.makoto.createmarketplace;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -12,11 +13,13 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import org.slf4j.Logger;
 import pl.makoto.createmarketplace.registry.ItemRegistry;
 import pl.makoto.createmarketplace.util.ShopScanner;
 
 @EventBusSubscriber(modid = CreateMarketplace.MODID, bus = Bus.GAME)
 public class CommonEvents {
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     @SubscribeEvent
     public static void onBlockRightClick(PlayerInteractEvent.RightClickBlock event) {
@@ -35,6 +38,10 @@ public class CommonEvents {
         if (be == null) return;
 
         if (player.getItemInHand(event.getHand()).is(ItemRegistry.DEBUG_PAPER.get())) {
+            // Permission check: require OP level 2 or Creative mode
+            if (!player.isCreative() && !player.hasPermissions(2)) {
+                return; // Allow normal block interaction
+            }
             event.setCanceled(true);
             event.setCancellationResult(InteractionResult.SUCCESS);
             if (!level.isClientSide()) {
@@ -81,7 +88,7 @@ public class CommonEvents {
                             .distinct()
                             .toList();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("Failed to retrieve existing shops for player {}", player.getUUID(), e);
                 }
 
                 net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(

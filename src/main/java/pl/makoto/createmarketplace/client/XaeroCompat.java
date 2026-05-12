@@ -1,55 +1,89 @@
 package pl.makoto.createmarketplace.client;
 
+import com.mojang.logging.LogUtils;
 import net.neoforged.fml.ModList;
+import org.slf4j.Logger;
 import pl.makoto.createmarketplace.MarketConfig;
 
-public class XaeroCompat {
-    public static void addWaypoint(String name, int x, int y, int z) {
-        // Sprawdzamy, czy Xaero's Minimap jest załadowana
-        if (!ModList.get().isLoaded("xaerominimap")) {
-            System.err.println("Xaero's Minimap nie jest zainstalowana. Omijanie dodawania waypointu.");
-            return;
-        }
+import java.util.List;
 
+public class XaeroCompat {
+    private static final Logger LOGGER = LogUtils.getLogger();
+
+    // Cached reflection objects — initialized once
+    private static boolean initialized = false;
+    private static boolean available = false;
+    private static Class<?> waypointClass;
+    private static java.lang.reflect.Constructor<?> waypointConstructor;
+    private static java.lang.reflect.Method getCurrentSessionMethod;
+    private static java.lang.reflect.Method getWaypointsManagerMethod;
+    private static java.lang.reflect.Method getWaypointsMethod;
+    private static java.lang.reflect.Method getListMethod;
+    private static java.lang.reflect.Method saveWaypointsMethod;
+
+    private static synchronized void initReflection() {
+        if (initialized) return;
+        initialized = true;
         try {
-            // Używamy refleksji aby nie wymagać modyfikacji na etapie kompilacji (hard-dependency).
-            // To symuluje kod:
-            // Waypoint w = new Waypoint(x, y, z, name, symbol, color, globalType, temporary);
-            // XaeroMinimapSession.getCurrentSession().getWaypointsManager().getWaypoints().getList().add(w);
-            
-            Class<?> waypointClass = Class.forName("xaero.common.minimap.waypoints.Waypoint");
-            
-            String symbol = "🛒";
-            MarketConfig.WaypointSymbolMode mode = MarketConfig.WAYPOINT_SYMBOL_MODE.get();
-            if (mode == MarketConfig.WaypointSymbolMode.FIRST_LETTER && name != null && !name.isEmpty()) {
-                symbol = name.substring(0, 1).toUpperCase();
-            } else if (mode == MarketConfig.WaypointSymbolMode.CUSTOM) {
-                symbol = MarketConfig.CUSTOM_WAYPOINT_SYMBOL.get();
-            }
-            
-            Object waypoint = waypointClass.getConstructor(
-                    int.class, int.class, int.class, String.class, String.class, int.class, int.class, boolean.class
-            ).newInstance(x, y, z, name, symbol, 1, 0, false);
+            waypointClass = Class.forName("xaero.common.minimap.waypoints.Waypoint");
+            waypointConstructor = waypointClass.getConstructor(
+                int.class, int.class, int.class, String.class, String.class, int.class, int.class, boolean.class);
 
             Class<?> sessionClass = Class.forName("xaero.common.XaeroMinimapSession");
-            Object session = sessionClass.getMethod("getCurrentSession").invoke(null);
-            
-            if (session == null) {
-                return; // Gracz nie jest w grze lub sesja nie wystartowała
-            }
-            
-            Object waypointManager = session.getClass().getMethod("getWaypointsManager").invoke(session);
-            Object waypointSet = waypointManager.getClass().getMethod("getWaypoints").invoke(waypointManager); 
+            getCurrentSessionMethod = sessionClass.getMethod("getCurrentSession");
 
-            java.util.List<Object> list = (java.util.List<Object>) waypointSet.getClass().getMethod("getList").invoke(waypointSet);
+            available = true;
+        } catch (Exception e) {
+            LOGGER.warn("Xaero's Minimap reflection init failed — waypoints disabled", e);
+            available = false;
+        }
+    }
+
+    public static void addWaypoint(String name, int x, int y, int z) {
+        if (!ModList.get().isLoaded("xaerominimap")) return;
+        initReflection();
+        if (!available) return;
+
+        try {
+            String symbol = resolveSymbol(name);
+            Object waypoint = waypointConstructor.newInstance(x, y, z, name, symbol, 1, 0, false);
+
+            Object session = getCurrentSessionMethod.invoke(null);
+            if (session == null) return;
+
+            if (getWaypointsManagerMethod == null) {
+                getWaypointsManagerMethod = session.getClass().getMethod("getWaypointsManager");
+            }
+            Object waypointManager = getWaypointsManagerMethod.invoke(session);
+
+            if (getWaypointsMethod == null) {
+                getWaypointsMethod = waypointManager.getClass().getMethod("getWaypoints");
+            }
+            Object waypointSet = getWaypointsMethod.invoke(waypointManager);
+
+            if (getListMethod == null) {
+                getListMethod = waypointSet.getClass().getMethod("getList");
+            }
+            @SuppressWarnings("unchecked")
+            List<Object> list = (List<Object>) getListMethod.invoke(waypointSet);
             list.add(waypoint);
 
-            // Wymuszenie zapisu
-            waypointManager.getClass().getMethod("saveWaypoints").invoke(waypointManager);
-            
+            if (saveWaypointsMethod == null) {
+                saveWaypointsMethod = waypointManager.getClass().getMethod("saveWaypoints");
+            }
+            saveWaypointsMethod.invoke(waypointManager);
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Błąd podczas dodawania Waypointu przez API Xaero's Minimap.");
+            LOGGER.error("Failed to add Xaero waypoint", e);
         }
+    }
+
+    private static String resolveSymbol(String name) {
+        MarketConfig.WaypointSymbolMode mode = MarketConfig.WAYPOINT_SYMBOL_MODE.get();
+        if (mode == MarketConfig.WaypointSymbolMode.FIRST_LETTER && name != null && !name.isEmpty()) {
+            return name.substring(0, 1).toUpperCase();
+        } else if (mode == MarketConfig.WaypointSymbolMode.CUSTOM) {
+            return MarketConfig.CUSTOM_WAYPOINT_SYMBOL.get();
+        }
+        return "🛒";
     }
 }

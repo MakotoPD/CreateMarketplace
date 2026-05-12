@@ -16,6 +16,8 @@
   "gui.create_marketplace.global_market.favorites_only": "★ Favorites",
   "gui.create_marketplace.global_market.all_shops": "☆ All",
   "gui.create_marketplace.global_market.back": "Back",
+  "gui.create_marketplace.global_market.unknown_item": "Unknown",
+  "gui.create_marketplace.global_market.free": "Free",
   
   "gui.create_marketplace.registration.title": "Shop Registration",
   "gui.create_marketplace.registration.publish": "Publish",
@@ -28,8 +30,16 @@
   "gui.create_marketplace.my_shops.blocks": "Blocks: %s",
   "gui.create_marketplace.my_shops.price": "Price: %s",
   "gui.create_marketplace.my_shops.pos": "Pos: %s",
+  "gui.create_marketplace.my_shops.no_item": "No item",
+  "gui.create_marketplace.my_shops.free": "Free",
   
   "message.create_marketplace.registration_success": "Server successfully registered your shop: %s",
   "message.create_marketplace.no_card": "You do not have a Registration Card in your inventory!",
+  "message.create_marketplace.invalid_shop_name": "Invalid shop name! Must be 1-32 characters and not empty.",
+  "message.create_marketplace.too_far": "You are too far from the shop block!",
+  "message.create_marketplace.invalid_block": "No valid block found at that position!",
+  "message.create_marketplace.not_a_shop": "That block is not a recognized shop!",
+  "message.create_marketplace.offer_limit_reached": "You have reached the maximum number of offers (%s)!",
+  "message.create_marketplace.cancelled_by_mod": "Registration cancelled by another mod.",
   "message.create_marketplace.delete_success": "Successfully deleted shop(s)."
 }
