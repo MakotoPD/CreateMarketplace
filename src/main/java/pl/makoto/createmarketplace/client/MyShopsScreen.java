@@ -141,10 +141,11 @@ public class MyShopsScreen extends Screen {
                     guiGraphics.renderItemDecorations(this.font, offer.item(), centerX - 170, y + 10);
 
                     String itemName = offer.item().isEmpty() ? Component.translatable("gui.create_marketplace.my_shops.no_item").getString() : offer.item().getHoverName().getString();
+                    String itemAmount = offer.item().isEmpty() ? "" : offer.item().getCount() + "x ";
                     String currencyName = offer.currency().isEmpty() ? Component.translatable("gui.create_marketplace.my_shops.free").getString() : offer.currency().getHoverName().getString();
                     String currencyAmount = offer.currency().isEmpty() ? "" : offer.currency().getCount() + "x ";
 
-                    guiGraphics.drawString(this.font, itemName, centerX - 145, y + 5, 0xFFFFFF);
+                    guiGraphics.drawString(this.font, itemAmount + itemName, centerX - 145, y + 5, 0xFFFFFF);
                     guiGraphics.drawString(this.font, Component.translatable("gui.create_marketplace.my_shops.price", currencyAmount + currencyName), centerX - 145, y + 15, 0xAAAAAA);
                     guiGraphics.drawString(this.font, Component.translatable("gui.create_marketplace.my_shops.pos", offer.pos().toShortString()), centerX - 145, y + 25, 0x777777);
 

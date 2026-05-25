@@ -268,12 +268,13 @@ public class GlobalMarketScreen extends Screen {
 
                                 String itemName = offer.item().isEmpty() ? "Nieznany"
                                         : offer.item().getHoverName().getString();
+                                String itemAmount = offer.item().isEmpty() ? "" : offer.item().getCount() + "x ";
                                 String currencyName = offer.currency().isEmpty() ? "Darmowe"
                                         : offer.currency().getHoverName().getString();
                                 String currencyAmount = offer.currency().isEmpty() ? ""
                                         : offer.currency().getCount() + "x ";
 
-                                guiGraphics.drawString(this.font, itemName, centerX - 85, y + 5, 0xFFFFFF);
+                                guiGraphics.drawString(this.font, itemAmount + itemName, centerX - 85, y + 5, 0xFFFFFF);
                                 guiGraphics.drawString(this.font, currencyAmount + currencyName, centerX - 85, y + 15,
                                         0xAAAAAA);
 

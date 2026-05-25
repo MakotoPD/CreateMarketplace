@@ -68,7 +68,7 @@ public class NumismaticsShopHandler implements IShopHandler {
                         })
                         .orElse(ItemStack.EMPTY);
 
-                if (sellingItem.isEmpty() && nbt.contains("RequestData")) {
+                if (nbt.contains("RequestData")) {
                     CompoundTag requestData = nbt.getCompound("RequestData");
                     if (requestData.contains("encoded_request")) {
                         CompoundTag encodedRequest = requestData.getCompound("encoded_request");
@@ -78,9 +78,12 @@ public class NumismaticsShopHandler implements IShopHandler {
                                 net.minecraft.nbt.ListTag entries = orderedStacks.getList("entries", 10);
                                 if (!entries.isEmpty()) {
                                     CompoundTag entry = entries.getCompound(0);
-                                    if (entry.contains("item_stack")) {
+                                    if (sellingItem.isEmpty() && entry.contains("item_stack")) {
                                         sellingItem = ItemStack.parseOptional(level.registryAccess(),
                                                 entry.getCompound("item_stack"));
+                                    }
+                                    if (!sellingItem.isEmpty() && entry.contains("count")) {
+                                        sellingItem.setCount(entry.getInt("count"));
                                     }
                                 }
                             }
