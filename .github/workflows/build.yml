@@ -1,4 +1,4 @@
-name: Java CI with Gradle
+name: Build and Release
 
 on:
   push:
@@ -10,11 +10,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
 
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
@@ -28,8 +28,21 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
+    - name: Get mod version
+      id: version
+      run: echo "version=$(grep '^mod_version' gradle.properties | cut -d'=' -f2 | tr -d '[:space:]')" >> $GITHUB_OUTPUT
+
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: MarketplaceMod
         path: build/libs/*.jar
+
+    - name: Publish GitHub Release
+      if: github.event_name == 'push'
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v${{ steps.version.outputs.version }}
+        name: Create Marketplace v${{ steps.version.outputs.version }}
+        files: build/libs/create_marketplace-*.jar
+        generate_release_notes: true
