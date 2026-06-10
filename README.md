@@ -28,6 +28,7 @@
 ### 🌐 Localization & Compatibility
 *   **Multilingual:** Full support for **English**, **Polish**, **German**, **Spanish**, and **French**.
 *   **Soft Dependency:** Works perfectly with or without Xaero's Minimap installed.
+*   **Addon Support:** Compatible with [Create: Tradeworks](https://modrinth.com/mod/create-tradeworks) — register shops on Shelves, Metal Shelves, Side Shelves, and Inverted Table Cloths.
 
 ---
 
@@ -78,8 +79,8 @@ repositories {
 }
 
 dependencies {
-    // Replace 0.2.2 with the version you want to use
-    implementation "maven.modrinth:create-marketplace:0.2.2"
+    // Replace 0.2.5 with the version you want to use
+    implementation "maven.modrinth:create-marketplace:0.2.5"
 }
 ```
 

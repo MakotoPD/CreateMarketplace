@@ -12,15 +12,31 @@ import pl.makoto.createmarketplace.util.ShopScanner;
 import java.util.Optional;
 
 /**
- * Handler wspierający bloki z moda Numismatics (Vendor i Table Cloth).
+ * Handler wspierający bloki z moda Numismatics (Vendor i Table Cloth)
+ * oraz wszystkie bloki dziedziczące po nich, np. półki z moda Tradeworks
+ * (Shelf, Metal Shelf, Side Shelf, Inverted Table Cloth).
  */
 public class NumismaticsShopHandler implements IShopHandler {
 
+    /**
+     * Sprawdza, czy klasa (lub którakolwiek z jej nadklas) zawiera podaną nazwę.
+     * Dzięki temu rozpoznajemy też bloki addonów dziedziczące po Create/Numismatics,
+     * np. SideShelfBlockEntity z Tradeworks, który rozszerza TableClothBlockEntity.
+     */
+    private static boolean isInHierarchy(Class<?> clazz, String classNamePart) {
+        while (clazz != null && clazz != Object.class) {
+            if (clazz.getName().contains(classNamePart)) {
+                return true;
+            }
+            clazz = clazz.getSuperclass();
+        }
+        return false;
+    }
+
     @Override
     public Optional<ShopResult> tryResolve(BlockEntity be, Level level, BlockPos pos) {
-        String fullClassName = be.getClass().getName();
-        boolean isVendor = fullClassName.contains("VendorBlockEntity");
-        boolean isTableCloth = fullClassName.contains("TableClothBlockEntity");
+        boolean isVendor = isInHierarchy(be.getClass(), "VendorBlockEntity");
+        boolean isTableCloth = !isVendor && isInHierarchy(be.getClass(), "TableClothBlockEntity");
 
         if (!isVendor && !isTableCloth) {
             return Optional.empty();
