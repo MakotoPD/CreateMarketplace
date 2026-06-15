@@ -1,5 +1,5 @@
 {
-  "item.create_marketplace.registration_card": "Tarjeta de Registro",
+  "item.create_marketplace.registration_book": "Libro de Registro",
   "key.createmarketplace.open_market": "Abrir Mercado Global",
   "key.categories.createmarketplace": "Create: Marketplace",
   "itemGroup.create_marketplace": "Create: Marketplace",
@@ -11,11 +11,21 @@
   "gui.create_marketplace.global_market.player": "Jugador: %s",
   "gui.create_marketplace.global_market.shop": "Tienda: %s",
   "gui.create_marketplace.global_market.navigate": "Navegar",
-  "gui.create_marketplace.global_market.navigate_success": "¡Punto de ruta '%s' enviado a Xaero's Minimap!",
+  "gui.create_marketplace.global_market.navigate_success": "¡Punto de ruta '%s' añadido a Xaero's Minimap!",
+  "gui.create_marketplace.global_market.navigate_fallback": "Tienda en %2$s en %1$s (instala Xaero's Minimap para puntos de ruta).",
   "gui.create_marketplace.global_market.favorites_only": "★ Favoritos",
   "gui.create_marketplace.global_market.all_shops": "☆ Todos",
   "gui.create_marketplace.global_market.back": "Volver",
   
+  "gui.create_marketplace.owner.server": "Servidor",
+  "gui.create_marketplace.tab.market": "Mercado",
+  "gui.create_marketplace.tab.favorites": "Favoritos",
+  "gui.create_marketplace.admin_badge": "ADMIN",
+  "gui.create_marketplace.filters.dimension": "Dimensión",
+  "gui.create_marketplace.col.dimension": "Dimensión",
+  "gui.create_marketplace.dim.overworld": "Superficie",
+  "gui.create_marketplace.dim.nether": "Nether",
+  "gui.create_marketplace.dim.end": "End",
   "gui.create_marketplace.registration.title": "Registro de Tienda",
   "gui.create_marketplace.registration.publish": "Publicar",
   "gui.create_marketplace.registration.name": "Nombre de la tienda",
@@ -29,6 +39,7 @@
   "gui.create_marketplace.my_shops.pos": "Pos: %s",
   
   "message.create_marketplace.registration_success": "El servidor ha registrado con éxito tu tienda: %s",
-  "message.create_marketplace.no_card": "¡No tienes una Tarjeta de Registro en tu inventario!",
+  "message.create_marketplace.player_only": "Solo un jugador puede usar este comando.",
+  "message.create_marketplace.no_card": "¡No tienes un Libro de Registro en tu inventario!",
   "message.create_marketplace.delete_success": "Tienda(s) eliminada(s) con éxito."
 }

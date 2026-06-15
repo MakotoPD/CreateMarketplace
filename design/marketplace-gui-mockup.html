@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CreateMarketplace — makieta GUI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* mosiądz + pergamin (Create) … */
+    --frame:       #2c1f10;
+    --brass:       #d7a648;
+    --brass-dark:  #b9842f;
+    --brass-light: #ecc873;
+    --parch:       #ece0c2;
+    --parch-2:     #e4d4af;
+    --parch-row:   #f2e8cd;
+    --parch-hover: #fbf3da;
+    /* … + patyna miedzi (verdigris) jako akcent — odróżnia od stockmarket */
+    --patina:      #3a9189;
+    --patina-dark: #2a6b64;
+    --patina-light:#5cb8ac;
+    --ink:         #43331c;
+    --ink-soft:    #8a7148;
+    --ink-mute:    #9a875f;
+    --link:        #2f6db5;
+    --coin:        #f4c542;
+    --coin-ring:   #b6862a;
+    --line:        #cbb98a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; min-height: 100%;
+    background:#16241a url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><rect width="8" height="8" fill="%2316241a"/><rect width="4" height="4" fill="%231c2c20"/><rect x="4" y="4" width="4" height="4" fill="%231c2c20"/></svg>');
+    font-family:'VT323', ui-monospace, monospace;
+    color: var(--ink);
+    display:flex; align-items:center; justify-content:center; padding:24px;
+    -webkit-font-smoothing:none;
+  }
+  .window { width:1080px; max-width:96vw; filter:drop-shadow(0 14px 30px rgba(0,0,0,.6)); }
+
+  /* płyta mosiężna z nitami */
+  .plate {
+    background:
+      radial-gradient(circle at 11px 11px, #7c5816 2px, transparent 3px),
+      radial-gradient(circle at calc(100% - 11px) 11px, #7c5816 2px, transparent 3px),
+      radial-gradient(circle at 11px calc(100% - 11px), #7c5816 2px, transparent 3px),
+      radial-gradient(circle at calc(100% - 11px) calc(100% - 11px), #7c5816 2px, transparent 3px),
+      linear-gradient(var(--brass-light), var(--brass) 45%, var(--brass-dark));
+  }
+
+  /* ---- nagłówek ---- */
+  .header {
+    display:flex; align-items:center; gap:14px;
+    padding:9px 16px;
+    border:3px solid var(--frame);
+    border-bottom:none;
+    border-radius:6px 6px 0 0;
+  }
+  .title {
+    font-size:30px; color:#2c1f10; letter-spacing:1px;
+    display:flex; align-items:center; gap:8px; flex:1;
+    text-shadow:0 1px 0 #f3da9a;
+  }
+  .title .gear { color:#5e4715; }
+
+  /* segmentowany przełącznik (zamiast teczek) */
+  .seg { display:flex; border:2px solid var(--frame); border-radius:4px; overflow:hidden; }
+  .seg button {
+    font-family:inherit; font-size:20px; cursor:pointer;
+    padding:6px 16px; border:none; border-left:2px solid var(--frame);
+    background:linear-gradient(#e7cd8f,#cdac63);
+    color:#3a2c14; display:flex; align-items:center; gap:7px;
+  }
+  .seg button:first-child { border-left:none; }
+  .seg button.active {
+    background:linear-gradient(var(--patina-light), var(--patina) 60%, var(--patina-dark));
+    color:#fff; text-shadow:0 1px 1px rgba(0,0,0,.4);
+  }
+
+  /* ---- korpus ---- */
+  .frame {
+    background:linear-gradient(var(--brass), var(--brass-dark));
+    border:3px solid var(--frame); border-top:none;
+    border-radius:0 0 6px 6px;
+    padding:6px;
+  }
+
+  /* ---- pasek szukania ---- */
+  .topbar { display:flex; gap:6px; margin-bottom:6px; }
+  .search {
+    flex:1; background:#211b12; border:2px solid var(--frame);
+    box-shadow:inset 0 2px 4px rgba(0,0,0,.6);
+    color:#d8c79a; font-family:inherit; font-size:21px;
+    padding:7px 12px; border-radius:3px;
+  }
+  .search::placeholder { color:#7d6f4e; }
+  .iconbtn {
+    width:40px; height:40px; border:2px solid var(--frame); border-radius:3px;
+    color:#2c1f10; font-size:22px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(var(--brass-light), var(--brass-dark));
+  }
+  .iconbtn:hover { background:linear-gradient(#f6dd9c, var(--brass)); }
+
+  .body { display:flex; gap:6px; }
+
+  /* ---- panel filtrów ---- */
+  .side {
+    width:226px; flex-shrink:0; font-size:20px;
+    background:var(--parch-2); border:2px solid var(--frame); border-radius:3px; overflow:hidden;
+  }
+  .side-title {
+    padding:6px 12px; font-size:21px; color:#fff; letter-spacing:1px;
+    background:linear-gradient(var(--patina), var(--patina-dark));
+    border-bottom:2px solid var(--frame);
+    display:flex; align-items:center; gap:7px;
+  }
+  .fgrp { border-bottom:1px solid #c7ad74; }
+  .fh {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:5px 12px; color:#3a2c14; cursor:pointer;
+  }
+  .fh .car { color:var(--patina-dark); }
+  .frow {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:3px 12px 3px 18px; cursor:pointer;
+  }
+  .frow:hover { background:var(--parch-hover); }
+  .frow.on { background:#d3c08c; box-shadow:inset 3px 0 0 var(--patina); }
+  .frow .lbl { display:flex; align-items:center; gap:7px; }
+  .frow .cnt { color:var(--ink-mute); }
+  .coin { width:15px;height:15px;border-radius:50%;flex-shrink:0;
+    background:radial-gradient(circle at 35% 30%, #ffe9a8, var(--coin) 60%, var(--coin-ring));
+    border:1px solid #8a6418; }
+  .head { width:16px;height:16px;border-radius:2px;border:1px solid rgba(0,0,0,.3);image-rendering:pixelated; }
+  .swatch { width:14px;height:14px;border-radius:2px;border:1px solid rgba(0,0,0,.3); }
+
+  /* ---- lista ofert ---- */
+  .list { flex:1; background:var(--parch); border:2px solid var(--frame); border-radius:3px;
+    display:flex; flex-direction:column; overflow:hidden; }
+  .lhead {
+    display:grid; grid-template-columns:30px 1fr 150px 160px 92px 116px;
+    background:linear-gradient(var(--patina), var(--patina-dark));
+    color:#fff; font-size:19px; border-bottom:2px solid var(--frame);
+  }
+  .lhead .h { padding:6px 10px; border-left:1px solid rgba(0,0,0,.25); display:flex; align-items:center; gap:5px; cursor:pointer; }
+  .lhead .h:first-child { border-left:none; }
+  .h .sort { opacity:.85; }
+
+  .rows { max-height:470px; overflow-y:auto; }
+  .row {
+    display:grid; grid-template-columns:30px 1fr 150px 160px 92px 116px;
+    align-items:center; font-size:21px; min-height:46px;
+    border-bottom:1px solid var(--line);
+    border-left:4px solid transparent;
+  }
+  .row:nth-child(odd){ background:var(--parch-row); }
+  .row:nth-child(even){ background:var(--parch-2); }
+  .row:hover { background:var(--parch-hover); border-left-color:var(--patina); }
+  .row.sel  { background:#f6e7bd; border-left-color:var(--patina-dark); }
+  .cell { padding:4px 10px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+
+  .fav { text-align:center; color:#c8b079; cursor:pointer; }
+  .fav.on { color:#e8a91f; text-shadow:0 0 4px #f4c542; }
+
+  /* slot przedmiotu jak gniazdo ekwipunku */
+  .item { display:flex; align-items:center; gap:10px; }
+  .slot {
+    width:34px; height:34px; flex-shrink:0; border-radius:3px;
+    background:#2b2336; border:2px solid #6e5a2c;
+    box-shadow:inset 1px 1px 0 #8a7240, inset -1px -1px 0 #1c1626;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .slot .ico { width:22px; height:22px; border-radius:2px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.2); }
+  .iname { display:flex; align-items:center; gap:6px; min-width:0; }
+  .qty { color:var(--ink-mute); }
+  .tag { font-size:14px; padding:1px 5px; border-radius:2px; color:#fff; border:1px solid rgba(0,0,0,.25); }
+  .tag.v  { background:#4a7cc0; }
+  .tag.tw { background:#8a5cc0; }
+  .tag.tc { background:#2f9b8e; }
+
+  .price { display:flex; align-items:center; gap:6px; }
+  .free  { color:var(--patina-dark); }
+
+  .owner { display:flex; align-items:center; gap:8px; color:var(--link); }
+  .dim { color:var(--ink-soft); }
+  .dim.nether{ color:#a4452f; } .dim.end{ color:#6e4fa0; }
+
+  /* przycisk Nawiguj */
+  .navbtn {
+    font-family:inherit; font-size:18px; cursor:pointer;
+    display:inline-flex; align-items:center; gap:5px;
+    padding:4px 10px; border-radius:3px; color:#fff;
+    border:2px solid #1f4f49;
+    background:linear-gradient(var(--patina-light), var(--patina) 55%, var(--patina-dark));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
+  }
+  .navbtn:hover { background:linear-gradient(#6fcabd, var(--patina)); }
+
+  /* ---- stopka ---- */
+  .foot {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:5px 12px; margin-top:6px; font-size:19px; color:#5a4828;
+    background:var(--parch-2); border:2px solid var(--frame); border-radius:3px;
+  }
+  .foot .hint b { color:#3f3016; }
+  .note { color:#bcd3c0; font-size:18px; text-align:center; margin-top:10px; }
+</style>
+</head>
+<body>
+<div class="window">
+
+  <!-- nagłówek: tytuł + segmentowany przełącznik -->
+  <div class="header plate">
+    <div class="title"><span class="gear">⚙</span> Rynek Zębatkowa</div>
+    <div class="seg">
+      <button class="active">🛒 Rynek</button>
+      <button>🏠 Moje sklepy</button>
+      <button>⭐ Ulubione</button>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="topbar">
+      <input class="search" placeholder="Szukaj przedmiotu, sklepu lub gracza...">
+      <div class="iconbtn" title="Odśwież">⟳</div>
+      <div class="iconbtn" title="Zamknij">✕</div>
+    </div>
+
+    <div class="body">
+      <!-- FILTRY -->
+      <div class="side">
+        <div class="side-title">⚗ Filtry</div>
+
+        <div class="fgrp">
+          <div class="fh"><span>Waluta</span><span class="car">▾</span></div>
+          <div class="frow"><span class="lbl"><span class="coin"></span> Spur</span><span class="cnt">312</span></div>
+          <div class="frow"><span class="lbl"><span class="coin"></span> Bevel</span><span class="cnt">74</span></div>
+          <div class="frow"><span class="lbl"><span class="coin"></span> Sprocket</span><span class="cnt">22</span></div>
+          <div class="frow"><span class="lbl"><span class="swatch" style="background:#9aa0a6"></span> Barter</span><span class="cnt">15</span></div>
+        </div>
+
+        <div class="fgrp">
+          <div class="fh"><span>Właściciel</span><span class="car">▾</span></div>
+          <div class="frow on"><span class="lbl"><span class="head" style="background:linear-gradient(#c08457,#5b3a22)"></span> _Xanth_</span><span class="cnt">91</span></div>
+          <div class="frow"><span class="lbl"><span class="head" style="background:linear-gradient(#7a5a3a,#3a2716)"></span> GarrukJan</span><span class="cnt">60</span></div>
+          <div class="frow"><span class="lbl"><span class="head" style="background:linear-gradient(#caa07a,#6b4a2c)"></span> Tur_87</span><span class="cnt">34</span></div>
+          <div class="frow"><span class="lbl"><span class="head" style="background:linear-gradient(#6b4a30,#2c1c0e)"></span> farto666</span><span class="cnt">18</span></div>
+          <div class="frow"><span class="lbl"><span class="head" style="background:linear-gradient(#d2b08a,#7a5630)"></span> Mai_Cutie</span><span class="cnt">10</span></div>
+        </div>
+
+        <div class="fgrp">
+          <div class="fh"><span>Wymiar</span><span class="car">▸</span></div>
+        </div>
+      </div>
+
+      <!-- LISTA OFERT -->
+      <div class="list">
+        <div class="lhead">
+          <div class="h"></div>
+          <div class="h">Przedmiot <span class="sort">▲</span></div>
+          <div class="h">Cena</div>
+          <div class="h">Właściciel</div>
+          <div class="h">Wymiar</div>
+          <div class="h">Akcja</div>
+        </div>
+        <div class="rows">
+
+          <div class="row">
+            <div class="cell fav">☆</div>
+            <div class="cell item"><span class="slot"><span class="ico" style="background:#6e5638"></span></span><span class="iname"><span class="tag v">V</span>Kłoda akacji <span class="qty">×64</span></span></div>
+            <div class="cell price"><span class="coin"></span> ×1 Spur</div>
+            <div class="cell owner">GarrukJan</div>
+            <div class="cell dim">overworld</div>
+            <div class="cell"><button class="navbtn">⌖ Nawiguj</button></div>
+          </div>
+
+          <div class="row sel">
+            <div class="cell fav on">★</div>
+            <div class="cell item"><span class="slot"><span class="ico" style="background:#b6502d"></span></span><span class="iname"><span class="tag v">V</span>Ulepszenie Swappera <span class="qty">×1</span></span></div>
+            <div class="cell price"><span class="coin"></span> ×6 Spur</div>
+            <div class="cell owner">_Xanth_</div>
+            <div class="cell dim">overworld</div>
+            <div class="cell"><button class="navbtn">⌖ Nawiguj</button></div>
+          </div>
+
+          <div class="row">
+            <div class="cell fav">☆</div>
+            <div class="cell item"><span class="slot"><span class="ico" style="background:#39b58d"></span></span><span class="iname"><span class="tag tc">TC</span>Ramka osiągnięcia <span class="qty">×1</span></span></div>
+            <div class="cell price"><span class="coin"></span> ×2 Spur</div>
+            <div class="cell owner">Tur_87</div>
+            <div class="cell dim">overworld</div>
+            <div class="cell"><button class="navbtn">⌖ Nawiguj</button></div>
+          </div>
+
+          <div class="row">
+            <div class="cell fav">☆</div>
+            <div class="cell item"><span class="slot"><span class="ico" style="background:#9b6ad6"></span></span><span class="iname"><span class="tag v">V</span>Odłamek ametystu <span class="qty">×32</span></span></div>
+            <div class="cell price"><span class="coin"></span> ×5</div>
+            <div class="cell owner">farto666</div>
+            <div class="cell dim">overworld</div>
+            <div class="cell"><button class="navbtn">⌖ Nawiguj</button></div>
+          </div>
+
+          <div class="row">
+            <div class="cell fav">☆</div>
+            <div class="cell item"><span class="slot"><span class="ico" style="background:#5c5c5c"></span></span><span class="iname"><span class="tag v">V</span>Andezyt <span class="qty">×128</span></span></div>
+            <div class="cell price"><span class="coin"></span> ×4</div>
+            <div class="cell owner">Jabroni7030</div>
+            <div class="cell dim">overworld</div>
+            <div class="cell"><button class="navbtn">⌖ Nawiguj</button></div>
+          </div>
+
+          <div class="row">
+            <div class="cell fav">☆</div>
+            <div class="cell item"><span class="slot"><span class="ico" style="background:#8c8f93"></span></span><span class="iname"><span class="tag tw">TW</span>Stop andezytu <span class="qty">×64</span></span></div>
+            <div class="cell price"><span class="coin"></span> ×2</div>
+            <div class="cell owner">LessAngryNow</div>
+            <div class="cell dim">overworld</div>
+            <div class="cell"><button class="navbtn">⌖ Nawiguj</button></div>
+          </div>
+
+          <div class="row">
+            <div class="cell fav on">★</div>
+            <div class="cell item"><span class="slot"><span class="ico" style="background:#3a3f47"></span></span><span class="iname"><span class="tag tw">TW</span>Belka andezytowa <span class="qty">×64</span></span></div>
+            <div class="cell price"><span class="coin"></span> ×3</div>
+            <div class="cell owner">LessAngryNow</div>
+            <div class="cell dim">overworld</div>
+            <div class="cell"><button class="navbtn">⌖ Nawiguj</button></div>
+          </div>
+
+          <div class="row">
+            <div class="cell fav">☆</div>
+            <div class="cell item"><span class="slot"><span class="ico" style="background:#c64fa0"></span></span><span class="iname"><span class="tag v">V</span>Zawilec <span class="qty">×16</span></span></div>
+            <div class="cell price free">Za darmo</div>
+            <div class="cell owner">sneiY</div>
+            <div class="cell dim">overworld</div>
+            <div class="cell"><button class="navbtn">⌖ Nawiguj</button></div>
+          </div>
+
+          <div class="row">
+            <div class="cell fav">☆</div>
+            <div class="cell item"><span class="slot"><span class="ico" style="background:#3a2c55"></span></span><span class="iname"><span class="tag v">V</span>Tajemne kowadło <span class="qty">×1</span></span></div>
+            <div class="cell price"><span class="coin"></span> ×5</div>
+            <div class="cell owner">farto666</div>
+            <div class="cell dim nether">the_nether</div>
+            <div class="cell"><button class="navbtn">⌖ Nawiguj</button></div>
+          </div>
+
+          <div class="row">
+            <div class="cell fav">☆</div>
+            <div class="cell item"><span class="slot"><span class="ico" style="background:#7aa0d6"></span></span><span class="iname"><span class="tag tc">TC</span>Esencja many <span class="qty">×32</span></span></div>
+            <div class="cell price"><span class="swatch" style="background:#c0843f;width:15px;height:15px"></span> ×4 Cukier</div>
+            <div class="cell owner">Mai_Cutie</div>
+            <div class="cell dim end">the_end</div>
+            <div class="cell"><button class="navbtn">⌖ Nawiguj</button></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <span>1–10 / 433</span>
+      <span class="hint">↕ przewijanie &nbsp;·&nbsp; klik nagłówka = <b>sortuj</b> &nbsp;·&nbsp; <b>★</b> ulubione &nbsp;·&nbsp; <b>⌖ Nawiguj</b> = waypoint</span>
+    </div>
+  </div>
+</div>
+
+<div class="note">Makieta CreateMarketplace — mosiądz + patyna miedzi. Ikony przedmiotów/głów to placeholdery; w grze prawdziwe tekstury i głowy graczy.</div>
+</body>
+</html>

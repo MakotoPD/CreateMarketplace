@@ -1,5 +1,5 @@
 {
-  "item.create_marketplace.registration_card": "Karta Rejestracyjna",
+  "item.create_marketplace.registration_book": "Księga Rejestracyjna",
   "item.create_marketplace.debug_paper": "Papier Debugujący",
   "key.createmarketplace.open_market": "Otwórz Globalny Rynek",
   "key.categories.createmarketplace": "Create: Marketplace",
@@ -12,24 +12,58 @@
   "gui.create_marketplace.global_market.player": "Gracz: %s",
   "gui.create_marketplace.global_market.shop": "Sklep: %s",
   "gui.create_marketplace.global_market.navigate": "Nawiguj",
-  "gui.create_marketplace.global_market.navigate_success": "Przesłano punkt '%s' do Xaero's Minimap!",
+  "gui.create_marketplace.global_market.navigate_success": "Dodano punkt '%s' do Xaero's Minimap!",
+  "gui.create_marketplace.global_market.navigate_fallback": "Sklep w %2$s na pozycji %1$s (zainstaluj Xaero's Minimap, by dodać punkt).",
   "gui.create_marketplace.global_market.favorites_only": "★ Ulubione",
   "gui.create_marketplace.global_market.all_shops": "☆ Wszystkie",
   "gui.create_marketplace.global_market.back": "Wróć",
-  
+
+  "gui.create_marketplace.owner.server": "Serwer",
+  "gui.create_marketplace.tab.market": "Rynek",
+  "gui.create_marketplace.tab.favorites": "Ulubione",
+  "gui.create_marketplace.admin_badge": "ADMIN",
+  "gui.create_marketplace.filters.title": "Filtry",
+  "gui.create_marketplace.filters.owner": "Właściciel",
+  "gui.create_marketplace.filters.currency": "Waluta",
+  "gui.create_marketplace.filters.dimension": "Wymiar",
+  "gui.create_marketplace.col.item": "Przedmiot",
+  "gui.create_marketplace.col.price": "Cena",
+  "gui.create_marketplace.col.owner": "Właściciel",
+  "gui.create_marketplace.col.shop": "Sklep",
+  "gui.create_marketplace.col.dimension": "Wymiar",
+  "gui.create_marketplace.col.action": "Akcja",
+  "gui.create_marketplace.dim.overworld": "Powierzchnia",
+  "gui.create_marketplace.dim.nether": "Nether",
+  "gui.create_marketplace.dim.end": "End",
+  "gui.create_marketplace.footer.hint": "klik nagłówka = sortuj · ★ ulubione · Nawiguj = waypoint",
+  "gui.create_marketplace.my_shops.free": "Za darmo",
+  "gui.create_marketplace.my_shops.no_item": "Brak przedmiotu",
+
   "gui.create_marketplace.registration.title": "Rejestracja Sklepu",
   "gui.create_marketplace.registration.publish": "Opublikuj",
   "gui.create_marketplace.registration.name": "Nazwa sklepu",
   "gui.create_marketplace.registration.add_to_existing": "Dodaj do istniejącego sklepu:",
-  
+  "gui.create_marketplace.registration.selling": "Sprzedajesz:",
+  "gui.create_marketplace.registration.price": "Cena:",
+
+  "gui.create_marketplace.confirm.title": "Na pewno?",
+  "gui.create_marketplace.confirm.delete_offer": "Usunąć tę ofertę?",
+  "gui.create_marketplace.confirm.delete_shop": "Usunąć cały sklep „%s\"?",
+  "gui.create_marketplace.confirm.yes": "Usuń",
+  "gui.create_marketplace.confirm.no": "Anuluj",
+
   "gui.create_marketplace.my_shops.title": "Moje Sklepy",
   "gui.create_marketplace.my_shops.delete": "Usuń",
   "gui.create_marketplace.my_shops.no_shops": "Nie posiadasz żadnych sklepów.",
   "gui.create_marketplace.my_shops.blocks": "Bloków: %s",
   "gui.create_marketplace.my_shops.price": "Cena: %s",
   "gui.create_marketplace.my_shops.pos": "Poz: %s",
-  
+
   "message.create_marketplace.registration_success": "Serwer pomyślnie zarejestrował Twój sklep: %s",
-  "message.create_marketplace.no_card": "Nie posiadasz Karty Rejestracyjnej w ekwipunku!",
-  "message.create_marketplace.delete_success": "Pomyślnie usunięto sklep(y)."
+  "message.create_marketplace.registration_success_server": "Zarejestrowano sklep „%s\" jako Serwer.",
+  "message.create_marketplace.no_card": "Nie posiadasz Księgi Rejestracyjnej w ekwipunku!",
+  "message.create_marketplace.delete_success": "Pomyślnie usunięto sklep(y).",
+  "message.create_marketplace.adminmode_on": "Tryb administratora: WŁĄCZONY — rejestrujesz sklepy jako Serwer.",
+  "message.create_marketplace.adminmode_off": "Tryb administratora: WYŁĄCZONY.",
+  "message.create_marketplace.player_only": "Tej komendy może użyć tylko gracz."
 }

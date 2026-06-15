@@ -4,7 +4,6 @@ import com.mojang.logging.LogUtils;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import org.slf4j.Logger;
 import pl.makoto.createmarketplace.CreateMarketplace;
 
@@ -22,6 +21,12 @@ public class ClientGameEvents {
                 }
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onLoggingOut(net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut event) {
+        // admin mode resetuje się serwerowo przy wylogowaniu — czyścimy też cień klienta
+        ClientAdminState.set(false);
     }
 
     @SubscribeEvent

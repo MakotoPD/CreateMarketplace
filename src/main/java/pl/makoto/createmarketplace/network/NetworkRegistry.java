@@ -2,12 +2,11 @@ package pl.makoto.createmarketplace.network;
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.EventBusSubscriber.Bus;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import pl.makoto.createmarketplace.CreateMarketplace;
 
-@EventBusSubscriber(modid = CreateMarketplace.MODID, bus = Bus.MOD)
+@EventBusSubscriber(modid = CreateMarketplace.MODID)
 public class NetworkRegistry {
 
     @SubscribeEvent
@@ -51,6 +50,16 @@ public class NetworkRegistry {
                 (payload, context) -> {
                     if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
                         ClientPayloadHandler.handleOpenRegistrationGui(payload, context);
+                    }
+                }
+        );
+
+        registrar.playToClient(
+                AdminModePayload.TYPE,
+                AdminModePayload.STREAM_CODEC,
+                (payload, context) -> {
+                    if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
+                        ClientPayloadHandler.handleAdminMode(payload, context);
                     }
                 }
         );

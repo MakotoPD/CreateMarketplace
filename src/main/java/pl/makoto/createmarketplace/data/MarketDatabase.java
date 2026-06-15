@@ -5,8 +5,10 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 
@@ -31,14 +33,19 @@ public class MarketDatabase extends SavedData {
             
             // BlockPos
             BlockPos pos = BlockPos.of(offerTag.getLong("Pos"));
-            
+
+            // wymiar (stare oferty bez pola → zakładamy overworld)
+            ResourceLocation dimension = offerTag.contains("Dimension")
+                    ? ResourceLocation.tryParse(offerTag.getString("Dimension")) : null;
+            if (dimension == null) dimension = Level.OVERWORLD.location();
+
             // ItemStack deserialization using HolderLookup.Provider
             ItemStack item = ItemStack.parseOptional(provider, offerTag.getCompound("Item"));
             ItemStack currency = ItemStack.parseOptional(provider, offerTag.getCompound("Currency"));
-            
+
             long timestamp = offerTag.getLong("Timestamp");
-            
-            db.offers.add(new MarketOffer(ownerId, ownerName, shopName, pos, item, currency, timestamp));
+
+            db.offers.add(new MarketOffer(ownerId, ownerName, shopName, pos, dimension, item, currency, timestamp));
         }
         return db;
     }
@@ -52,6 +59,7 @@ public class MarketDatabase extends SavedData {
             offerTag.putString("OwnerName", offer.ownerName());
             offerTag.putString("ShopName", offer.shopName());
             offerTag.putLong("Pos", offer.pos().asLong());
+            offerTag.putString("Dimension", offer.dimension().toString());
             offerTag.put("Item", offer.item().saveOptional(provider));
             offerTag.put("Currency", offer.currency().saveOptional(provider));
             offerTag.putLong("Timestamp", offer.timestamp());

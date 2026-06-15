@@ -21,9 +21,9 @@ public class CreateMarketplace {
     
     public static final Supplier<CreativeModeTab> MARKETPLACE_TAB = CREATIVE_MODE_TABS.register("marketplace_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.create_marketplace"))
-            .icon(() -> new net.minecraft.world.item.ItemStack(ItemRegistry.REGISTRATION_CARD.get()))
+            .icon(() -> new net.minecraft.world.item.ItemStack(ItemRegistry.REGISTRATION_BOOK.get()))
             .displayItems((parameters, output) -> {
-                output.accept(ItemRegistry.REGISTRATION_CARD.get());
+                output.accept(ItemRegistry.REGISTRATION_BOOK.get());
                 output.accept(ItemRegistry.DEBUG_PAPER.get());
             })
             .build());

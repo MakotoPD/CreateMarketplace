@@ -1,5 +1,5 @@
 {
-  "item.create_marketplace.registration_card": "Registrierungskarte",
+  "item.create_marketplace.registration_book": "Registrierungsbuch",
   "key.createmarketplace.open_market": "Globalen Markt öffnen",
   "key.categories.createmarketplace": "Create: Marketplace",
   "itemGroup.create_marketplace": "Create: Marketplace",
@@ -11,11 +11,21 @@
   "gui.create_marketplace.global_market.player": "Spieler: %s",
   "gui.create_marketplace.global_market.shop": "Shop: %s",
   "gui.create_marketplace.global_market.navigate": "Navigieren",
-  "gui.create_marketplace.global_market.navigate_success": "Wegpunkt '%s' an Xaero's Minimap gesendet!",
+  "gui.create_marketplace.global_market.navigate_success": "Wegpunkt '%s' zu Xaero's Minimap hinzugefügt!",
+  "gui.create_marketplace.global_market.navigate_fallback": "Shop in %2$s bei %1$s (installiere Xaero's Minimap für Wegpunkte).",
   "gui.create_marketplace.global_market.favorites_only": "★ Favoriten",
   "gui.create_marketplace.global_market.all_shops": "☆ Alle",
   "gui.create_marketplace.global_market.back": "Zurück",
   
+  "gui.create_marketplace.owner.server": "Server",
+  "gui.create_marketplace.tab.market": "Markt",
+  "gui.create_marketplace.tab.favorites": "Favoriten",
+  "gui.create_marketplace.admin_badge": "ADMIN",
+  "gui.create_marketplace.filters.dimension": "Dimension",
+  "gui.create_marketplace.col.dimension": "Dimension",
+  "gui.create_marketplace.dim.overworld": "Oberwelt",
+  "gui.create_marketplace.dim.nether": "Nether",
+  "gui.create_marketplace.dim.end": "End",
   "gui.create_marketplace.registration.title": "Shop-Registrierung",
   "gui.create_marketplace.registration.publish": "Veröffentlichen",
   "gui.create_marketplace.registration.name": "Shop-Name",
@@ -29,6 +39,7 @@
   "gui.create_marketplace.my_shops.pos": "Pos: %s",
   
   "message.create_marketplace.registration_success": "Server hat deinen Shop erfolgreich registriert: %s",
-  "message.create_marketplace.no_card": "Du hast keine Registrierungskarte im Inventar!",
+  "message.create_marketplace.player_only": "Nur ein Spieler kann diesen Befehl verwenden.",
+  "message.create_marketplace.no_card": "Du hast kein Registrierungsbuch im Inventar!",
   "message.create_marketplace.delete_success": "Shop(s) erfolgreich gelöscht."
 }

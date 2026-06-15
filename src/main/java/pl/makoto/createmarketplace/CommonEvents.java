@@ -9,15 +9,19 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.common.EventBusSubscriber.Bus;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.slf4j.Logger;
 import pl.makoto.createmarketplace.registry.ItemRegistry;
-import pl.makoto.createmarketplace.util.ShopScanner;
 
-@EventBusSubscriber(modid = CreateMarketplace.MODID, bus = Bus.GAME)
+@EventBusSubscriber(modid = CreateMarketplace.MODID)
 public class CommonEvents {
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -26,8 +30,8 @@ public class CommonEvents {
         Player player = event.getEntity();
         ItemStack stack = event.getItemStack();
         
-        // 1. Działamy tylko jeśli gracz trzyma kartę lub papier debugujący
-        if (!stack.is(ItemRegistry.REGISTRATION_CARD.get()) && !stack.is(ItemRegistry.DEBUG_PAPER.get())) {
+        // 1. Działamy tylko jeśli gracz trzyma księgę rejestracyjną lub papier debugujący
+        if (!stack.is(ItemRegistry.REGISTRATION_BOOK.get()) && !stack.is(ItemRegistry.DEBUG_PAPER.get())) {
             return;
         }
 
@@ -80,10 +84,13 @@ public class CommonEvents {
             if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
                 java.util.List<String> existingShops = new java.util.ArrayList<>();
                 try {
+                    // w admin mode podpowiadamy istniejące sklepy "Serwera", inaczej własne gracza
+                    java.util.UUID ownerFilter = AdminMode.isAdmin(player.getUUID())
+                            ? AdminMode.SERVER_UUID : player.getUUID();
                     pl.makoto.createmarketplace.data.MarketDatabase db = pl.makoto.createmarketplace.data.MarketDatabase
                             .get(level.getServer());
                     existingShops = db.getOffers().stream()
-                            .filter(o -> o.ownerId().equals(player.getUUID()))
+                            .filter(o -> o.ownerId().equals(ownerFilter))
                             .map(pl.makoto.createmarketplace.data.MarketOffer::shopName)
                             .distinct()
                             .toList();
@@ -97,5 +104,47 @@ public class CommonEvents {
                                 currencyItem, existingShops));
             }
         } catch (Exception ignored) {}
+    }
+
+    // --- Admin mode: komenda + czyszczenie przy wylogowaniu ---
+
+    @SubscribeEvent
+    public static void onRegisterCommands(RegisterCommandsEvent event) {
+        event.getDispatcher().register(
+            Commands.literal("createmarketplace")
+                .then(Commands.literal("adminmode")
+                    .requires(src -> src.hasPermission(2))
+                    .executes(ctx -> setAdminMode(ctx.getSource(), null))
+                    .then(Commands.literal("on").executes(ctx -> setAdminMode(ctx.getSource(), true)))
+                    .then(Commands.literal("off").executes(ctx -> setAdminMode(ctx.getSource(), false)))));
+    }
+
+    private static int setAdminMode(CommandSourceStack src, Boolean on) {
+        ServerPlayer player = src.getPlayer();
+        if (player == null) {
+            src.sendFailure(Component.translatable("message.create_marketplace.player_only"));
+            return 0;
+        }
+        boolean now;
+        if (on == null) {
+            now = AdminMode.toggle(player.getUUID());
+        } else {
+            AdminMode.set(player.getUUID(), on);
+            now = on;
+        }
+        player.sendSystemMessage(Component.translatable(
+                now ? "message.create_marketplace.adminmode_on" : "message.create_marketplace.adminmode_off")
+                .withStyle(now ? ChatFormatting.GREEN : ChatFormatting.YELLOW));
+        // synchronizuj stan do klienta (wskaźnik w GUI + filtr "Moje sklepy")
+        net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player,
+                new pl.makoto.createmarketplace.network.AdminModePayload(now));
+        return 1;
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            AdminMode.clear(player.getUUID());
+        }
     }
 }

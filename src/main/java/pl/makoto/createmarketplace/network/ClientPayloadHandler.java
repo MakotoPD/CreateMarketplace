@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.slf4j.Logger;
 import pl.makoto.createmarketplace.client.GlobalMarketScreen;
+import pl.makoto.createmarketplace.client.MyShopsScreen;
 import pl.makoto.createmarketplace.client.ShopRegistrationScreen;
 import pl.makoto.createmarketplace.data.MarketOffer;
 
@@ -24,13 +25,25 @@ public class ClientPayloadHandler {
     public static void handleMarketUpdate(final MarketUpdatePayload payload, final IPayloadContext context) {
         context.enqueueWork(() -> {
             Minecraft mc = Minecraft.getInstance();
+            // zawsze trzymamy najnowsze oferty (do otwarcia/powrotu na ekran)
+            cachedOffers = payload.offers();
             if (mc.screen instanceof GlobalMarketScreen marketScreen) {
                 marketScreen.updateOffers(payload.offers());
-            } else {
-                // Cache for later — do NOT open or change the current screen
-                cachedOffers = payload.offers();
+            } else if (mc.screen instanceof MyShopsScreen myShops) {
+                myShops.updateOffers(payload.offers());
             }
             LOGGER.debug("Client received market update. Offers: {}", payload.offers().size());
+        });
+    }
+
+    public static void handleAdminMode(final AdminModePayload payload, final IPayloadContext context) {
+        context.enqueueWork(() -> {
+            pl.makoto.createmarketplace.client.ClientAdminState.set(payload.active());
+            // odśwież otwarte "Moje sklepy" — zmienia się filtr (własne ↔ serwerowe)
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.screen instanceof MyShopsScreen myShops) {
+                myShops.updateOffers(cachedOffers);
+            }
         });
     }
 

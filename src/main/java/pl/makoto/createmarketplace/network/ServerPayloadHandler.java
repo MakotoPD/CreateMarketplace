@@ -28,9 +28,10 @@ public class ServerPayloadHandler {
             if (!(context.player() instanceof ServerPlayer player)) return;
 
             MarketOffer clientOffer = payload.offer();
+            boolean admin = pl.makoto.createmarketplace.AdminMode.isAdmin(player.getUUID());
 
-            // Step 1: Check Registration Card (existing logic)
-            if (!player.isCreative()) {
+            // Step 1: Check Registration Card (admin mode i kreatywny pomijają)
+            if (!admin && !player.isCreative()) {
                 if (!consumeOrDamageCard(player)) {
                     player.sendSystemMessage(Component.translatable("message.create_marketplace.no_card")
                         .withStyle(ChatFormatting.RED));
@@ -67,23 +68,28 @@ public class ServerPayloadHandler {
                 return;
             }
 
-            // Step 5: Check offer limit
+            // Step 5: Check offer limit (admin mode pomija — sklepy "Serwera")
             MarketDatabase db = MarketDatabase.get(player.server);
-            long playerOfferCount = db.getOffers().stream()
-                .filter(o -> o.ownerId().equals(player.getUUID()))
-                .count();
-            if (playerOfferCount >= MarketConfig.MAX_OFFERS_PER_PLAYER.get()) {
-                player.sendSystemMessage(Component.translatable("message.create_marketplace.offer_limit_reached",
-                    MarketConfig.MAX_OFFERS_PER_PLAYER.get()).withStyle(ChatFormatting.RED));
-                return;
+            if (!admin) {
+                long playerOfferCount = db.getOffers().stream()
+                    .filter(o -> o.ownerId().equals(player.getUUID()))
+                    .count();
+                if (playerOfferCount >= MarketConfig.MAX_OFFERS_PER_PLAYER.get()) {
+                    player.sendSystemMessage(Component.translatable("message.create_marketplace.offer_limit_reached",
+                        MarketConfig.MAX_OFFERS_PER_PLAYER.get()).withStyle(ChatFormatting.RED));
+                    return;
+                }
             }
 
-            // Step 6: Override identity (server-authoritative UUID and name)
+            // Step 6: Override identity — zwykły gracz albo "Serwer" w admin mode
+            java.util.UUID ownerId = admin ? pl.makoto.createmarketplace.AdminMode.SERVER_UUID : player.getUUID();
+            String ownerName = admin ? pl.makoto.createmarketplace.AdminMode.SERVER_NAME : player.getGameProfile().getName();
             MarketOffer serverOffer = new MarketOffer(
-                player.getUUID(),
-                player.getGameProfile().getName(),
+                ownerId,
+                ownerName,
                 shopName,
                 clientOffer.pos(),
+                player.level().dimension().location(),
                 clientOffer.item(),
                 clientOffer.currency(),
                 System.currentTimeMillis()
@@ -100,21 +106,22 @@ public class ServerPayloadHandler {
             db.addOffer(serverOffer);
             NeoForge.EVENT_BUS.post(new MarketOfferEvent.Registered(serverOffer, player));
 
-            LOGGER.info("Server received and saved offer for shop: {}", shopName);
-            player.sendSystemMessage(Component.translatable("message.create_marketplace.registration_success", shopName)
-                .withStyle(ChatFormatting.GREEN));
+            LOGGER.info("Server received and saved offer for shop: {} (owner: {})", shopName, ownerName);
+            player.sendSystemMessage(Component.translatable(
+                    admin ? "message.create_marketplace.registration_success_server" : "message.create_marketplace.registration_success",
+                    shopName).withStyle(ChatFormatting.GREEN));
             PacketDistributor.sendToAllPlayers(new MarketUpdatePayload(db.getOffers()));
         });
     }
 
     /**
-     * Attempts to consume or damage a Registration Card from the player's inventory.
-     * Returns true if a card was found (and consumed/damaged), false otherwise.
+     * Attempts to consume or damage a Registration Book from the player's inventory.
+     * Returns true if a book was found (and consumed/damaged), false otherwise.
      */
     private static boolean consumeOrDamageCard(ServerPlayer player) {
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             net.minecraft.world.item.ItemStack stack = player.getInventory().getItem(i);
-            if (stack.is(pl.makoto.createmarketplace.registry.ItemRegistry.REGISTRATION_CARD.get())) {
+            if (stack.is(pl.makoto.createmarketplace.registry.ItemRegistry.REGISTRATION_BOOK.get())) {
                 if (MarketConfig.USE_CARD_DURABILITY.get()) {
                     int damage = stack.getDamageValue();
                     if (damage + 1 >= stack.getMaxDamage()) {
@@ -148,11 +155,17 @@ public class ServerPayloadHandler {
             if (context.player() instanceof ServerPlayer player) {
                 MarketDatabase db = MarketDatabase.get(player.server);
 
+                boolean admin = pl.makoto.createmarketplace.AdminMode.isAdmin(player.getUUID());
+                // usuwanie całego sklepu (po nazwie): admin → sklepy "Serwera", inaczej własne
+                java.util.UUID ownerFilter = admin
+                        ? pl.makoto.createmarketplace.AdminMode.SERVER_UUID : player.getUUID();
+
                 boolean changed = false;
                 if (payload.posToRemove().isPresent()) {
                     BlockPos pos = payload.posToRemove().get();
+                    // usuwanie pojedynczej oferty: admin może KAŻDĄ, gracz tylko własną
                     java.util.Optional<MarketOffer> existing = db.getOffers().stream()
-                        .filter(o -> o.pos().equals(pos) && o.ownerId().equals(player.getUUID()))
+                        .filter(o -> o.pos().equals(pos) && (admin || o.ownerId().equals(player.getUUID())))
                         .findFirst();
                     if (existing.isPresent()) {
                         db.removeOffer(pos);
@@ -162,7 +175,7 @@ public class ServerPayloadHandler {
                 } else if (payload.shopNameToRemove().isPresent()) {
                     String shopName = payload.shopNameToRemove().get();
                     List<MarketOffer> toRemove = db.getOffers().stream()
-                        .filter(o -> o.shopName().equals(shopName) && o.ownerId().equals(player.getUUID()))
+                        .filter(o -> o.shopName().equals(shopName) && o.ownerId().equals(ownerFilter))
                         .toList();
                     for (MarketOffer offer : toRemove) {
                         db.removeOffer(offer.pos());

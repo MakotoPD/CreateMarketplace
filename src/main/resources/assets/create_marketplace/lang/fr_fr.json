@@ -1,5 +1,5 @@
 {
-  "item.create_marketplace.registration_card": "Carte d'Enregistrement",
+  "item.create_marketplace.registration_book": "Livre d'Enregistrement",
   "key.createmarketplace.open_market": "Ouvrir le Marché Global",
   "key.categories.createmarketplace": "Create: Marketplace",
   "itemGroup.create_marketplace": "Create: Marketplace",
@@ -11,11 +11,21 @@
   "gui.create_marketplace.global_market.player": "Joueur : %s",
   "gui.create_marketplace.global_market.shop": "Boutique : %s",
   "gui.create_marketplace.global_market.navigate": "Naviguer",
-  "gui.create_marketplace.global_market.navigate_success": "Point de passage '%s' envoyé à Xaero's Minimap !",
+  "gui.create_marketplace.global_market.navigate_success": "Point de passage '%s' ajouté à Xaero's Minimap !",
+  "gui.create_marketplace.global_market.navigate_fallback": "Boutique dans %2$s à %1$s (installez Xaero's Minimap pour les points de passage).",
   "gui.create_marketplace.global_market.favorites_only": "★ Favoris",
   "gui.create_marketplace.global_market.all_shops": "☆ Tout",
   "gui.create_marketplace.global_market.back": "Retour",
   
+  "gui.create_marketplace.owner.server": "Serveur",
+  "gui.create_marketplace.tab.market": "Marché",
+  "gui.create_marketplace.tab.favorites": "Favoris",
+  "gui.create_marketplace.admin_badge": "ADMIN",
+  "gui.create_marketplace.filters.dimension": "Dimension",
+  "gui.create_marketplace.col.dimension": "Dimension",
+  "gui.create_marketplace.dim.overworld": "Surface",
+  "gui.create_marketplace.dim.nether": "Nether",
+  "gui.create_marketplace.dim.end": "End",
   "gui.create_marketplace.registration.title": "Enregistrement de Boutique",
   "gui.create_marketplace.registration.publish": "Publier",
   "gui.create_marketplace.registration.name": "Nom de la boutique",
@@ -29,6 +39,7 @@
   "gui.create_marketplace.my_shops.pos": "Pos : %s",
   
   "message.create_marketplace.registration_success": "Le serveur a enregistré votre boutique avec succès : %s",
-  "message.create_marketplace.no_card": "Vous n'avez pas de Carte d'Enregistrement dans votre inventaire !",
+  "message.create_marketplace.player_only": "Seul un joueur peut utiliser cette commande.",
+  "message.create_marketplace.no_card": "Vous n'avez pas de Livre d'Enregistrement dans votre inventaire !",
   "message.create_marketplace.delete_success": "Boutique(s) supprimée(s) avec succès."
 }

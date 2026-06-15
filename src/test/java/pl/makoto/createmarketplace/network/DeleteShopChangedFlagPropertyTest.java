@@ -168,8 +168,10 @@ class DeleteShopChangedFlagPropertyTest {
         Arbitrary<BlockPos> positions = blockPositions();
         Arbitrary<Long> timestamps = Arbitraries.longs().between(0, System.currentTimeMillis());
 
+        net.minecraft.resources.ResourceLocation dim =
+                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("minecraft", "overworld");
         return Combinators.combine(ownerIds, ownerNames, names, positions, timestamps)
                 .as((ownerId, ownerName, shopName, pos, timestamp) ->
-                        new MarketOffer(ownerId, ownerName, shopName, pos, null, null, timestamp));
+                        new MarketOffer(ownerId, ownerName, shopName, pos, dim, null, null, timestamp));
     }
 }
