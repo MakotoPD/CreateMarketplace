@@ -1,6 +1,7 @@
 {
   "item.create_marketplace.registration_book": "Registration Book",
   "item.create_marketplace.debug_paper": "Debug Paper",
+  "block.create_marketplace.server_vendor": "Server Vendor",
   "key.createmarketplace.open_market": "Open Global Market",
   "key.categories.createmarketplace": "Create: Marketplace",
   "itemGroup.create_marketplace": "Create: Marketplace",
@@ -73,5 +74,35 @@
   "message.create_marketplace.not_a_shop": "That block is not a recognized shop!",
   "message.create_marketplace.offer_limit_reached": "You have reached the maximum number of offers (%s)!",
   "message.create_marketplace.cancelled_by_mod": "Registration cancelled by another mod.",
-  "message.create_marketplace.delete_success": "Successfully deleted shop(s)."
+  "message.create_marketplace.delete_success": "Successfully deleted shop(s).",
+
+  "gui.create_marketplace.server_vendor.admin.title": "Server Vendor — Configure",
+  "gui.create_marketplace.server_vendor.admin.trade_item": "Trade item",
+  "gui.create_marketplace.server_vendor.admin.currency": "Currency",
+  "gui.create_marketplace.server_vendor.admin.coins_auto": "Empty = Numismatics coinage",
+  "gui.create_marketplace.server_vendor.admin.clear": "Clear",
+  "gui.create_marketplace.server_vendor.admin.buy_price": "Buy price",
+  "gui.create_marketplace.server_vendor.admin.sell_price": "Sell price",
+  "gui.create_marketplace.server_vendor.admin.suggest_60": "60% of buy",
+  "gui.create_marketplace.server_vendor.admin.allow_buy": "Allow buying",
+  "gui.create_marketplace.server_vendor.admin.allow_sell": "Allow selling",
+  "gui.create_marketplace.server_vendor.admin.save": "Save",
+  "gui.create_marketplace.server_vendor.admin.cancel": "Cancel",
+
+  "gui.create_marketplace.server_vendor.trade.title": "Server Vendor",
+  "gui.create_marketplace.server_vendor.trade.buy": "Buy",
+  "gui.create_marketplace.server_vendor.trade.sell": "Sell",
+  "gui.create_marketplace.server_vendor.trade.quantity": "Quantity",
+  "gui.create_marketplace.server_vendor.trade.max": "Max",
+  "gui.create_marketplace.server_vendor.trade.total": "Total",
+  "gui.create_marketplace.server_vendor.trade.disabled": "Disabled",
+
+  "message.create_marketplace.server_vendor.ok": "Trade successful (×%s).",
+  "message.create_marketplace.server_vendor.no_funds": "Not enough currency.",
+  "message.create_marketplace.server_vendor.no_items": "Not enough items.",
+  "message.create_marketplace.server_vendor.no_space": "Inventory full.",
+  "message.create_marketplace.server_vendor.disabled": "This side of the trade is disabled.",
+  "message.create_marketplace.server_vendor.admin_required": "Enable Admin Mode to edit this block.",
+  "message.create_marketplace.server_vendor.empty": "This vendor has no item configured.",
+  "message.create_marketplace.server_vendor.too_far": "You are too far from the vendor."
 }

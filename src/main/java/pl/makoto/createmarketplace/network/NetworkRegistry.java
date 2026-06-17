@@ -32,6 +32,18 @@ public class NetworkRegistry {
                 ServerPayloadHandler::handleDeleteShop
         );
 
+        registrar.playToServer(
+                SaveServerVendorPayload.TYPE,
+                SaveServerVendorPayload.STREAM_CODEC,
+                ServerPayloadHandler::handleSaveServerVendor
+        );
+
+        registrar.playToServer(
+                ServerVendorTradePayload.TYPE,
+                ServerVendorTradePayload.STREAM_CODEC,
+                ServerPayloadHandler::handleServerVendorTrade
+        );
+
         // Pakiety S2C (Od serwera do klienta) - rejestrowane na obu stronach dla kompatybilności kanałów,
         // ale logika handlera jest wywoływana tylko na kliencie.
         registrar.playToClient(
@@ -60,6 +72,26 @@ public class NetworkRegistry {
                 (payload, context) -> {
                     if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
                         ClientPayloadHandler.handleAdminMode(payload, context);
+                    }
+                }
+        );
+
+        registrar.playToClient(
+                OpenServerVendorTradePayload.TYPE,
+                OpenServerVendorTradePayload.STREAM_CODEC,
+                (payload, context) -> {
+                    if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
+                        ClientPayloadHandler.handleOpenServerVendorTrade(payload, context);
+                    }
+                }
+        );
+
+        registrar.playToClient(
+                ServerVendorTradeResultPayload.TYPE,
+                ServerVendorTradeResultPayload.STREAM_CODEC,
+                (payload, context) -> {
+                    if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
+                        ClientPayloadHandler.handleServerVendorTradeResult(payload, context);
                     }
                 }
         );

@@ -1,5 +1,6 @@
 {
   "item.create_marketplace.registration_book": "Libro de Registro",
+  "block.create_marketplace.server_vendor": "Vendedor del Servidor",
   "key.createmarketplace.open_market": "Abrir Mercado Global",
   "key.categories.createmarketplace": "Create: Marketplace",
   "itemGroup.create_marketplace": "Create: Marketplace",

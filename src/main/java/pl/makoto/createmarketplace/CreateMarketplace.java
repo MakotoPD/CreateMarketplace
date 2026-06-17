@@ -25,21 +25,26 @@ public class CreateMarketplace {
             .displayItems((parameters, output) -> {
                 output.accept(ItemRegistry.REGISTRATION_BOOK.get());
                 output.accept(ItemRegistry.DEBUG_PAPER.get());
+                output.accept(ItemRegistry.SERVER_VENDOR_ITEM.get());
             })
             .build());
 
     public CreateMarketplace(IEventBus modEventBus, net.neoforged.fml.ModContainer modContainer) {
         LOGGER.info(">>> Create: Marketplace is initializing...");
-        
+
         try {
+            pl.makoto.createmarketplace.registry.BlockRegistry.BLOCKS.register(modEventBus);
+            pl.makoto.createmarketplace.registry.BlockEntityRegistry.BLOCK_ENTITIES.register(modEventBus);
+            pl.makoto.createmarketplace.registry.MenuRegistry.MENU_TYPES.register(modEventBus);
             ItemRegistry.ITEMS.register(modEventBus);
             CREATIVE_MODE_TABS.register(modEventBus);
-            
+
             modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.COMMON, MarketConfig.COMMON_SPEC);
             modContainer.registerConfig(net.neoforged.fml.config.ModConfig.Type.CLIENT, MarketConfig.CLIENT_SPEC);
-            
+
             // Rejestracja domyślnych handlerów API
             pl.makoto.createmarketplace.api.MarketApi.registerHandler(new pl.makoto.createmarketplace.api.impl.NumismaticsShopHandler());
+            pl.makoto.createmarketplace.api.MarketApi.registerHandler(new pl.makoto.createmarketplace.api.impl.ServerVendorShopHandler());
             
             modEventBus.addListener(this::commonSetup);
             

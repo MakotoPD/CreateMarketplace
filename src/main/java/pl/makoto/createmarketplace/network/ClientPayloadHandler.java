@@ -54,4 +54,24 @@ public class ClientPayloadHandler {
             );
         });
     }
+
+    public static void handleOpenServerVendorTrade(final OpenServerVendorTradePayload payload, final IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Minecraft.getInstance().setScreen(new pl.makoto.createmarketplace.client.ServerVendorTradeScreen(
+                    payload.pos(), payload.tradeItem(),
+                    payload.buyPrice(), payload.sellPrice(),
+                    payload.buyEnabled(), payload.sellEnabled()));
+        });
+    }
+
+    public static void handleServerVendorTradeResult(final ServerVendorTradeResultPayload payload, final IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.screen instanceof pl.makoto.createmarketplace.client.ServerVendorTradeScreen ts) {
+                ts.onResult(payload.ok(), payload.i18nKey(), payload.units());
+            } else if (mc.player != null) {
+                mc.player.displayClientMessage(net.minecraft.network.chat.Component.translatable(payload.i18nKey(), payload.units()), true);
+            }
+        });
+    }
 }
