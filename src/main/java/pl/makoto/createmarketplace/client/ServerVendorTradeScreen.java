@@ -144,7 +144,7 @@ public class ServerVendorTradeScreen extends Screen {
                 x + (w - this.font.width(trimmedName)) / 2, iconY + 22, INK, false);
 
         // ---- Strzałka wskazująca w dół ----
-        String arrow = buy ? "↓" : "↑";
+        String arrow = buy ? "↑" : "↓";
         g.drawString(this.font, arrow, x + (w - this.font.width(arrow)) / 2, iconY + 32, INK_SOFT, false);
 
         // ---- Cena (ikona ceny) ----
