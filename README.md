@@ -4,7 +4,7 @@
 ![Minecraft: 1.21.1](https://img.shields.io/badge/Minecraft-1.21.1-green.svg)
 ![NeoForge: 21.1.228+](https://img.shields.io/badge/NeoForge-21.1.228+-orange.svg)
 
-**Create: Marketplace** is a specialized expansion for the **Create** mod ecosystem on NeoForge 1.21.1. It bridges the gap between industrial automation and player commerce by providing a unified, server-wide advertising board for all **Create: Numismatics** vendors.
+**Create: Marketplace** is a specialized expansion for the **Create** mod ecosystem on NeoForge 1.21.1. It bridges the gap between industrial automation and player commerce by providing a unified, server-wide advertising board for all **Create: Numismatics** vendors — plus a dedicated **Server Vendor** block for admin-run shops with unlimited stock.
 
 ---
 
@@ -24,6 +24,13 @@
 *   **Registration Card:** A dedicated tool used to link your Numismatics Vendors to the global board.
 *   **Dynamic Names:** Give your shops unique names and add multiple items to the same shop listing.
 *   **Configurable Durability:** Server owners can decide if registration cards are consumed upon use or have infinite durability.
+
+### 🏧 Server Vendor (Admin Shop)
+*   **Unlimited Stock:** A server-run shop block that buys and/or sells without any physical inventory, automation, or restocking — perfect for admin shops, spawn markets, and economy sinks/faucets.
+*   **Buy & Sell:** Configure a sell price (players buy from the vendor) and/or a buy price (players sell to the vendor); each direction can be toggled independently.
+*   **Flexible Currency:** Accept **Create: Numismatics** coins (any denomination — prices are valued in *spurs*) or **any item** as a custom currency.
+*   **In-World Preview:** The traded item floats and spins above the block, with a floating name hologram and a price icon + quantity label so players can read the deal at a glance.
+*   **Market Integration:** Server Vendor offers show up on the **Global Market** right alongside player shops.
 
 ### 🌐 Localization & Compatibility
 *   **Multilingual:** Full support for **English**, **Polish**, **German**, **Spanish**, and **French**.
@@ -51,6 +58,38 @@
 3.  **Register:** Right-click your Vendor with the Registration Card to name and publish your shop.
 4.  **Open Market:** Use the card (Right-click air) or the default hotkey (**`M`**) to browse the global market.
 5.  **Manage:** Use the "My Shops" button within the market to delete or track your own listings.
+
+---
+
+## 🏧 Server Vendor
+
+The **Server Vendor** is an admin-oriented shop block that trades items on behalf of the server. Unlike a regular *Numismatics* vendor, it has **no inventory** — it can sell and buy items endlessly, making it ideal for spawn shops, admin stores, and controlling the server economy.
+
+### How it works
+
+Each Server Vendor is configured with up to three item "templates":
+
+| Template | Meaning |
+| --- | --- |
+| **Trade item** | What the vendor deals in. Its **stack count = the quantity exchanged per transaction** (e.g. a stack of 4 means players trade 4 at a time). |
+| **Buy price** | What a player **pays** to buy the trade item from the vendor. |
+| **Sell price** | What a player **receives** when selling the trade item to the vendor. |
+
+The **Buy** and **Sell** directions can each be enabled or disabled, so a vendor can be buy-only, sell-only, or both.
+
+### Pricing & currency
+
+The price stack works in one of two modes:
+
+*   **Numismatics coins (coinage mode):** When the price is a Numismatics coin, its value is read in **spurs** — the stack count is multiplied by the coin's denomination (e.g. `5 × cog = 5 × 64 = 320 spurs`). Players can pay with **any mix of coins** that adds up to the required spurs, and the vendor automatically makes change.
+*   **Custom item currency:** Any non-coin item can be used as currency. The price is then simply counted by **item quantity**.
+
+### Setting one up
+
+1.  **Place** a Server Vendor block.
+2.  **Open the admin screen** (operators or /createmarketplace adminmode) and drop in the trade item, the buy price, and/or the sell price, then toggle which directions are active.
+3.  Players **right-click** the block to open the trade screen, pick a quantity, and confirm — coins/items are pulled straight from their inventory and the goods are handed over (or vice-versa for selling).
+4.  The offer automatically appears on the **Global Market** so players can find it from anywhere.
 
 ---
 
