@@ -1,5 +1,6 @@
 {
   "item.create_marketplace.registration_book": "Livre d'Enregistrement",
+  "block.create_marketplace.server_vendor": "Marchand du Serveur",
   "key.createmarketplace.open_market": "Ouvrir le Marché Global",
   "key.categories.createmarketplace": "Create: Marketplace",
   "itemGroup.create_marketplace": "Create: Marketplace",

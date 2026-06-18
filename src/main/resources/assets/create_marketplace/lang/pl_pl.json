@@ -1,6 +1,7 @@
 {
   "item.create_marketplace.registration_book": "Księga Rejestracyjna",
   "item.create_marketplace.debug_paper": "Papier Debugujący",
+  "block.create_marketplace.server_vendor": "Serwerowy Sprzedawca",
   "key.createmarketplace.open_market": "Otwórz Globalny Rynek",
   "key.categories.createmarketplace": "Create: Marketplace",
   "itemGroup.create_marketplace": "Create: Marketplace",
@@ -65,5 +66,35 @@
   "message.create_marketplace.delete_success": "Pomyślnie usunięto sklep(y).",
   "message.create_marketplace.adminmode_on": "Tryb administratora: WŁĄCZONY — rejestrujesz sklepy jako Serwer.",
   "message.create_marketplace.adminmode_off": "Tryb administratora: WYŁĄCZONY.",
-  "message.create_marketplace.player_only": "Tej komendy może użyć tylko gracz."
+  "message.create_marketplace.player_only": "Tej komendy może użyć tylko gracz.",
+
+  "gui.create_marketplace.server_vendor.admin.title": "Serwerowy Sprzedawca — Konfiguracja",
+  "gui.create_marketplace.server_vendor.admin.trade_item": "Przedmiot handlu",
+  "gui.create_marketplace.server_vendor.admin.currency": "Waluta",
+  "gui.create_marketplace.server_vendor.admin.coins_auto": "Pusty = monety Numismatics",
+  "gui.create_marketplace.server_vendor.admin.clear": "Wyczyść",
+  "gui.create_marketplace.server_vendor.admin.buy_price": "Cena kupna",
+  "gui.create_marketplace.server_vendor.admin.sell_price": "Cena sprzedaży",
+  "gui.create_marketplace.server_vendor.admin.suggest_60": "60% kupna",
+  "gui.create_marketplace.server_vendor.admin.allow_buy": "Pozwól kupować",
+  "gui.create_marketplace.server_vendor.admin.allow_sell": "Pozwól sprzedawać",
+  "gui.create_marketplace.server_vendor.admin.save": "Zapisz",
+  "gui.create_marketplace.server_vendor.admin.cancel": "Anuluj",
+
+  "gui.create_marketplace.server_vendor.trade.title": "Serwerowy Sprzedawca",
+  "gui.create_marketplace.server_vendor.trade.buy": "Kup",
+  "gui.create_marketplace.server_vendor.trade.sell": "Sprzedaj",
+  "gui.create_marketplace.server_vendor.trade.quantity": "Ilość",
+  "gui.create_marketplace.server_vendor.trade.max": "Max",
+  "gui.create_marketplace.server_vendor.trade.total": "Razem",
+  "gui.create_marketplace.server_vendor.trade.disabled": "Wyłączone",
+
+  "message.create_marketplace.server_vendor.ok": "Transakcja zakończona (×%s).",
+  "message.create_marketplace.server_vendor.no_funds": "Brak wystarczającej waluty.",
+  "message.create_marketplace.server_vendor.no_items": "Brak wystarczającej liczby przedmiotów.",
+  "message.create_marketplace.server_vendor.no_space": "Ekwipunek pełny.",
+  "message.create_marketplace.server_vendor.disabled": "Ta strona handlu jest wyłączona.",
+  "message.create_marketplace.server_vendor.admin_required": "Włącz Admin Mode aby edytować ten blok.",
+  "message.create_marketplace.server_vendor.empty": "Ten sprzedawca nie ma skonfigurowanego przedmiotu.",
+  "message.create_marketplace.server_vendor.too_far": "Jesteś za daleko od sprzedawcy."
 }

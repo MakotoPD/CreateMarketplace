@@ -192,6 +192,125 @@ public class ServerPayloadHandler {
         });
     }
 
+    public static void handleSaveServerVendor(final SaveServerVendorPayload payload, final IPayloadContext context) {
+        context.enqueueWork(() -> {
+            if (!(context.player() instanceof ServerPlayer player)) return;
+            if (!pl.makoto.createmarketplace.AdminMode.isAdmin(player.getUUID())) {
+                player.sendSystemMessage(Component.translatable("message.create_marketplace.server_vendor.admin_required")
+                        .withStyle(ChatFormatting.RED));
+                return;
+            }
+            BlockPos pos = payload.pos();
+            if (player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 64) return;
+            BlockEntity be = player.serverLevel().getBlockEntity(pos);
+            if (!(be instanceof pl.makoto.createmarketplace.block.ServerVendorBlockEntity sv)) return;
+            sv.applySnapshot(payload.tradeItem(), payload.buyPrice(), payload.sellPrice(),
+                    payload.buyEnabled(), payload.sellEnabled());
+        });
+    }
+
+    public static void handleServerVendorTrade(final ServerVendorTradePayload payload, final IPayloadContext context) {
+        context.enqueueWork(() -> {
+            if (!(context.player() instanceof ServerPlayer player)) return;
+            BlockPos pos = payload.pos();
+            if (player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 64) {
+                sendResult(player, false, "message.create_marketplace.server_vendor.too_far", 0);
+                return;
+            }
+            BlockEntity be = player.serverLevel().getBlockEntity(pos);
+            if (!(be instanceof pl.makoto.createmarketplace.block.ServerVendorBlockEntity sv)) {
+                sendResult(player, false, "message.create_marketplace.invalid_block", 0);
+                return;
+            }
+            int qty = payload.quantity();
+            if (qty <= 0) return;
+            net.minecraft.world.item.ItemStack template = sv.getTradeItem();
+            if (template.isEmpty()) {
+                sendResult(player, false, "message.create_marketplace.server_vendor.empty", 0);
+                return;
+            }
+            boolean buying = payload.buying();
+            if ((buying && !sv.isBuyEnabled()) || (!buying && !sv.isSellEnabled())) {
+                sendResult(player, false, "message.create_marketplace.server_vendor.disabled", 0);
+                return;
+            }
+            net.minecraft.world.item.ItemStack priceStack = buying ? sv.getBuyPrice() : sv.getSellPrice();
+            if (priceStack.isEmpty()) {
+                sendResult(player, false, "message.create_marketplace.server_vendor.empty", 0);
+                return;
+            }
+
+            var inv = player.getInventory();
+            int unitItemCount = Math.max(1, template.getCount());
+            boolean priceIsCoin = pl.makoto.createmarketplace.util.Coinage.isNumismaticsCoin(priceStack);
+
+            if (buying) {
+                // gracz płaci priceStack × qty, otrzymuje template × qty
+                if (priceIsCoin) {
+                    int totalSpurs = priceStack.getCount()
+                            * pl.makoto.createmarketplace.util.Coinage.coinValueOf(priceStack) * qty;
+                    if (!pl.makoto.createmarketplace.util.Coinage.canDeductSpurs(inv, totalSpurs)) {
+                        sendResult(player, false, "message.create_marketplace.server_vendor.no_funds", 0);
+                        return;
+                    }
+                    pl.makoto.createmarketplace.util.Coinage.deductSpurs(inv, totalSpurs);
+                } else {
+                    int totalItems = priceStack.getCount() * qty;
+                    if (!pl.makoto.createmarketplace.util.Coinage.canDeductCustom(inv, priceStack, totalItems)) {
+                        sendResult(player, false, "message.create_marketplace.server_vendor.no_funds", 0);
+                        return;
+                    }
+                    pl.makoto.createmarketplace.util.Coinage.deductCustom(inv, priceStack, totalItems);
+                }
+                int totalGive = unitItemCount * qty;
+                int maxStack = template.getMaxStackSize();
+                while (totalGive > 0) {
+                    int take = Math.min(totalGive, maxStack);
+                    net.minecraft.world.item.ItemStack s = template.copyWithCount(take);
+                    if (!inv.add(s)) player.drop(s, false);
+                    totalGive -= take;
+                }
+                sendResult(player, true, "message.create_marketplace.server_vendor.ok", qty);
+            } else {
+                // gracz oddaje template × qty, otrzymuje priceStack × qty (jako monety lub items)
+                int needed = unitItemCount * qty;
+                int have = 0;
+                for (int i = 0; i < inv.getContainerSize(); i++) {
+                    net.minecraft.world.item.ItemStack s = inv.getItem(i);
+                    if (!s.isEmpty() && net.minecraft.world.item.ItemStack.isSameItemSameComponents(s, template)) {
+                        have += s.getCount();
+                    }
+                }
+                if (have < needed) {
+                    sendResult(player, false, "message.create_marketplace.server_vendor.no_items", 0);
+                    return;
+                }
+                int remaining = needed;
+                for (int i = 0; i < inv.getContainerSize() && remaining > 0; i++) {
+                    net.minecraft.world.item.ItemStack s = inv.getItem(i);
+                    if (s.isEmpty()) continue;
+                    if (!net.minecraft.world.item.ItemStack.isSameItemSameComponents(s, template)) continue;
+                    int take = Math.min(remaining, s.getCount());
+                    s.shrink(take);
+                    remaining -= take;
+                }
+                if (priceIsCoin) {
+                    int totalSpurs = priceStack.getCount()
+                            * pl.makoto.createmarketplace.util.Coinage.coinValueOf(priceStack) * qty;
+                    pl.makoto.createmarketplace.util.Coinage.giveSpurs(player, totalSpurs);
+                } else {
+                    int totalItems = priceStack.getCount() * qty;
+                    pl.makoto.createmarketplace.util.Coinage.giveCustom(player, priceStack, totalItems);
+                }
+                sendResult(player, true, "message.create_marketplace.server_vendor.ok", qty);
+            }
+        });
+    }
+
+    private static void sendResult(ServerPlayer player, boolean ok, String key, int units) {
+        PacketDistributor.sendToPlayer(player, new ServerVendorTradeResultPayload(ok, key, units));
+    }
+
     /**
      * Sanitizes a shop name. Returns null if the name is invalid (empty/whitespace-only or too long).
      * Strips § formatting codes before length check.

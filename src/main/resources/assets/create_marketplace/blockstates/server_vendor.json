@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "create_marketplace:block/server_vendor" },
+    "facing=south": { "model": "create_marketplace:block/server_vendor", "y": 180 },
+    "facing=west":  { "model": "create_marketplace:block/server_vendor", "y": 270 },
+    "facing=east":  { "model": "create_marketplace:block/server_vendor", "y": 90 }
+  }
+}

@@ -1,5 +1,6 @@
 package pl.makoto.createmarketplace.registry;
 
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -13,6 +14,9 @@ public class ItemRegistry {
     public static final DeferredItem<Item> REGISTRATION_BOOK = ITEMS.registerItem("registration_book",
             properties -> new RegistrationBookItem(properties.durability(10)));
 
-    public static final DeferredItem<Item> DEBUG_PAPER = ITEMS.registerItem("debug_paper", 
+    public static final DeferredItem<Item> DEBUG_PAPER = ITEMS.registerItem("debug_paper",
             properties -> new DebugPaperItem(properties.stacksTo(1)));
+
+    public static final DeferredItem<BlockItem> SERVER_VENDOR_ITEM = ITEMS.registerItem("server_vendor",
+            properties -> new BlockItem(BlockRegistry.SERVER_VENDOR.get(), properties));
 }
