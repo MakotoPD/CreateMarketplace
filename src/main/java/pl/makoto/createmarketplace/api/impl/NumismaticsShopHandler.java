@@ -35,6 +35,13 @@ public class NumismaticsShopHandler implements IShopHandler {
 
     @Override
     public Optional<ShopResult> tryResolve(BlockEntity be, Level level, BlockPos pos) {
+        // Nasz własny blok ServerVendorBlockEntity ma w nazwie "VendorBlockEntity",
+        // przez co isInHierarchy(...) fałszywie by go rozpoznał jako vendora Numismatics.
+        // Obsługuje go ServerVendorShopHandler — tutaj go pomijamy.
+        if (be instanceof pl.makoto.createmarketplace.block.ServerVendorBlockEntity) {
+            return Optional.empty();
+        }
+
         boolean isVendor = isInHierarchy(be.getClass(), "VendorBlockEntity");
         boolean isTableCloth = !isVendor && isInHierarchy(be.getClass(), "TableClothBlockEntity");
 
