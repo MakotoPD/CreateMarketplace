@@ -1,11 +1,12 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "category": "misc",
   "ingredients": [
     { "item": "minecraft:book" },
     { "item": "create:cogwheel" }
   ],
   "result": {
-    "id": "create_marketplace:registration_book",
+    "item": "create_marketplace:registration_book",
     "count": 1
   }
 }

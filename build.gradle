@@ -38,6 +38,12 @@ minecraft {
             workingDirectory project.file('run')
             property 'forge.logging.markerselection', 'SCAN,REGISTRIES,REGISTRYDUMP'
             property 'forge.logging.console.level', 'debug'
+
+            // Mody w libs/ to wydania z refmapami mixinów w nazwach SRG, a dev
+            // działa na nazwach Parchment. Bez tego Create pada na starcie
+            // (InvalidAccessorException w SystemReportAccessor).
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
             mods {
                 "${mod_id}" {
                     source sourceSets.main
@@ -96,6 +102,11 @@ dependencies {
     // Create / Numismatics / Xaero — jary lokalne w libs/, tak jak na gałęzi 1.21.1.
     // Mod nie importuje ich klas w czasie kompilacji (cała integracja idzie przez
     // refleksję i NBT), więc są potrzebne wyłącznie do uruchomienia w dev.
+    //
+    // To są wydane, zreobfuskowane jary: ich refmapy mixinów celują w nazwy SRG
+    // (f_143509_), a runtime dev ForgeGradle używa nazw Parchment. Rozwiązuje to
+    // remapowanie refmap w runtime, włączone w bloku runs przez mixin.env.* —
+    // fg.deobf na zależnościach plikowych nic tu nie daje.
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // JEI — dla 1.20.1 artefakt nazywa się *-forge-*, na 1.21.1 *-neoforge-*
