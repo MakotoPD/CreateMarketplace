@@ -1,26 +1,26 @@
 package pl.makoto.createmarketplace;
 
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 public class MarketConfig {
-    public static final ModConfigSpec COMMON_SPEC;
-    public static final ModConfigSpec CLIENT_SPEC;
+    public static final ForgeConfigSpec COMMON_SPEC;
+    public static final ForgeConfigSpec CLIENT_SPEC;
     
     // Common
-    public static final ModConfigSpec.EnumValue<WaypointSymbolMode> WAYPOINT_SYMBOL_MODE;
-    public static final ModConfigSpec.ConfigValue<String> CUSTOM_WAYPOINT_SYMBOL;
-    public static final ModConfigSpec.BooleanValue USE_CARD_DURABILITY;
-    public static final ModConfigSpec.IntValue MAX_OFFERS_PER_PLAYER;
-    public static final ModConfigSpec.IntValue STOCK_CHECK_INTERVAL;
-    public static final ModConfigSpec.BooleanValue REMOVE_DEAD_OFFERS;
+    public static final ForgeConfigSpec.EnumValue<WaypointSymbolMode> WAYPOINT_SYMBOL_MODE;
+    public static final ForgeConfigSpec.ConfigValue<String> CUSTOM_WAYPOINT_SYMBOL;
+    public static final ForgeConfigSpec.BooleanValue USE_CARD_DURABILITY;
+    public static final ForgeConfigSpec.IntValue MAX_OFFERS_PER_PLAYER;
+    public static final ForgeConfigSpec.IntValue STOCK_CHECK_INTERVAL;
+    public static final ForgeConfigSpec.BooleanValue REMOVE_DEAD_OFFERS;
 
     // Client
-    public static final ModConfigSpec.EnumValue<ButtonPosition> BUTTON_POSITION;
-    public static final ModConfigSpec.IntValue CUSTOM_BUTTON_X;
-    public static final ModConfigSpec.IntValue CUSTOM_BUTTON_Y;
+    public static final ForgeConfigSpec.EnumValue<ButtonPosition> BUTTON_POSITION;
+    public static final ForgeConfigSpec.IntValue CUSTOM_BUTTON_X;
+    public static final ForgeConfigSpec.IntValue CUSTOM_BUTTON_Y;
 
     static {
-        ModConfigSpec.Builder commonBuilder = new ModConfigSpec.Builder();
+        ForgeConfigSpec.Builder commonBuilder = new ForgeConfigSpec.Builder();
 
         commonBuilder.comment("Settings for Create: Marketplace").push("general");
 
@@ -62,7 +62,7 @@ public class MarketConfig {
         commonBuilder.pop();
         COMMON_SPEC = commonBuilder.build();
 
-        ModConfigSpec.Builder clientBuilder = new ModConfigSpec.Builder();
+        ForgeConfigSpec.Builder clientBuilder = new ForgeConfigSpec.Builder();
         clientBuilder.comment("Client-side settings for Create: Marketplace").push("appearance");
 
         BUTTON_POSITION = clientBuilder

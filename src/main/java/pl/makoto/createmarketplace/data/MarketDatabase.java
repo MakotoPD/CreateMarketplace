@@ -1,7 +1,6 @@
 package pl.makoto.createmarketplace.data;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -32,7 +31,7 @@ public class MarketDatabase extends SavedData {
 
     public MarketDatabase() {}
 
-    public static MarketDatabase load(CompoundTag tag, HolderLookup.Provider provider) {
+    public static MarketDatabase load(CompoundTag tag) {
         MarketDatabase db = new MarketDatabase();
         ListTag listTag = tag.getList("Offers", Tag.TAG_COMPOUND);
         for (int i = 0; i < listTag.size(); i++) {
@@ -50,8 +49,8 @@ public class MarketDatabase extends SavedData {
             if (dimension == null) dimension = Level.OVERWORLD.location();
 
             // ItemStack deserialization using HolderLookup.Provider
-            ItemStack item = ItemStack.parseOptional(provider, offerTag.getCompound("Item"));
-            ItemStack currency = ItemStack.parseOptional(provider, offerTag.getCompound("Currency"));
+            ItemStack item = ItemStack.of(offerTag.getCompound("Item"));
+            ItemStack currency = ItemStack.of(offerTag.getCompound("Currency"));
 
             long timestamp = offerTag.getLong("Timestamp");
 
@@ -61,7 +60,7 @@ public class MarketDatabase extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
+    public CompoundTag save(CompoundTag tag) {
         ListTag listTag = new ListTag();
         for (MarketOffer offer : offers) {
             CompoundTag offerTag = new CompoundTag();
@@ -70,8 +69,8 @@ public class MarketDatabase extends SavedData {
             offerTag.putString("ShopName", offer.shopName());
             offerTag.putLong("Pos", offer.pos().asLong());
             offerTag.putString("Dimension", offer.dimension().toString());
-            offerTag.put("Item", offer.item().saveOptional(provider));
-            offerTag.put("Currency", offer.currency().saveOptional(provider));
+            offerTag.put("Item", offer.item().save(new CompoundTag()));
+            offerTag.put("Currency", offer.currency().save(new CompoundTag()));
             offerTag.putLong("Timestamp", offer.timestamp());
             listTag.add(offerTag);
         }
@@ -114,9 +113,7 @@ public class MarketDatabase extends SavedData {
 
     public static MarketDatabase get(MinecraftServer server) {
         DimensionDataStorage storage = server.overworld().getDataStorage();
-        return storage.computeIfAbsent(
-            new SavedData.Factory<>(MarketDatabase::new, MarketDatabase::load, null),
-            "create_marketplace_db"
-        );
+        // 1.20.1: computeIfAbsent(loader, konstruktor, nazwa) - nie ma SavedData.Factory
+        return storage.computeIfAbsent(MarketDatabase::load, MarketDatabase::new, "create_marketplace_db");
     }
 }

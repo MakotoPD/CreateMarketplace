@@ -6,7 +6,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.PacketDistributor;
+import pl.makoto.createmarketplace.network.MarketNetwork;
 import pl.makoto.createmarketplace.network.ServerVendorTradePayload;
 import pl.makoto.createmarketplace.util.Coinage;
 
@@ -93,7 +93,7 @@ public class ServerVendorTradeScreen extends Screen {
 
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
-        this.renderBackground(g, mx, my, pt);
+        this.renderBackground(g);
         hits.clear();
         int px = (this.width - PANEL_W) / 2;
         int py = (this.height - PANEL_H) / 2;
@@ -291,7 +291,7 @@ public class ServerVendorTradeScreen extends Screen {
             int have = 0;
             for (int i = 0; i < inv.getContainerSize(); i++) {
                 ItemStack s = inv.getItem(i);
-                if (!s.isEmpty() && ItemStack.isSameItemSameComponents(s, tradeItem)) have += s.getCount();
+                if (!s.isEmpty() && ItemStack.isSameItemSameTags(s, tradeItem)) have += s.getCount();
             }
             return Math.max(1, have / unit);
         }
@@ -301,7 +301,7 @@ public class ServerVendorTradeScreen extends Screen {
         long now = System.currentTimeMillis();
         if (now - lastActionAt < 200) return;
         lastActionAt = now;
-        PacketDistributor.sendToServer(new ServerVendorTradePayload(pos, buy, Math.max(1, qty)));
+        MarketNetwork.toServer(new ServerVendorTradePayload(pos, buy, Math.max(1, qty)));
     }
 
     public void onResult(boolean ok, String key, int units) {

@@ -1,7 +1,6 @@
 package pl.makoto.createmarketplace.block;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
@@ -41,29 +40,29 @@ public class ServerVendorBlockEntity extends BlockEntity implements MenuProvider
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.saveAdditional(tag, provider);
-        if (!tradeItem.isEmpty()) tag.put("TradeItem", tradeItem.save(provider, new CompoundTag()));
-        if (!buyPrice.isEmpty())  tag.put("BuyPrice",  buyPrice.save(provider, new CompoundTag()));
-        if (!sellPrice.isEmpty()) tag.put("SellPrice", sellPrice.save(provider, new CompoundTag()));
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        if (!tradeItem.isEmpty()) tag.put("TradeItem", tradeItem.save(new CompoundTag()));
+        if (!buyPrice.isEmpty())  tag.put("BuyPrice",  buyPrice.save(new CompoundTag()));
+        if (!sellPrice.isEmpty()) tag.put("SellPrice", sellPrice.save(new CompoundTag()));
         tag.putBoolean("BuyEnabled", buyEnabled);
         tag.putBoolean("SellEnabled", sellEnabled);
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
-        super.loadAdditional(tag, provider);
-        tradeItem = tag.contains("TradeItem") ? ItemStack.parseOptional(provider, tag.getCompound("TradeItem")) : ItemStack.EMPTY;
-        buyPrice  = tag.contains("BuyPrice")  ? ItemStack.parseOptional(provider, tag.getCompound("BuyPrice"))  : ItemStack.EMPTY;
-        sellPrice = tag.contains("SellPrice") ? ItemStack.parseOptional(provider, tag.getCompound("SellPrice")) : ItemStack.EMPTY;
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        tradeItem = tag.contains("TradeItem") ? ItemStack.of(tag.getCompound("TradeItem")) : ItemStack.EMPTY;
+        buyPrice  = tag.contains("BuyPrice")  ? ItemStack.of(tag.getCompound("BuyPrice"))  : ItemStack.EMPTY;
+        sellPrice = tag.contains("SellPrice") ? ItemStack.of(tag.getCompound("SellPrice")) : ItemStack.EMPTY;
         buyEnabled  = !tag.contains("BuyEnabled")  || tag.getBoolean("BuyEnabled");
         sellEnabled = !tag.contains("SellEnabled") || tag.getBoolean("SellEnabled");
     }
 
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider provider) {
-        CompoundTag tag = super.getUpdateTag(provider);
-        saveAdditional(tag, provider);
+    public CompoundTag getUpdateTag() {
+        CompoundTag tag = super.getUpdateTag();
+        saveAdditional(tag);
         return tag;
     }
 
@@ -73,8 +72,8 @@ public class ServerVendorBlockEntity extends BlockEntity implements MenuProvider
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider provider) {
-        if (pkt.getTag() != null) loadAdditional(pkt.getTag(), provider);
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        if (pkt.getTag() != null) load(pkt.getTag());
     }
 
     public void sync() {

@@ -4,7 +4,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import net.neoforged.neoforge.network.PacketDistributor;
+import pl.makoto.createmarketplace.network.MarketNetwork;
 import pl.makoto.createmarketplace.AdminMode;
 import pl.makoto.createmarketplace.data.MarketOffer;
 import pl.makoto.createmarketplace.data.StockInfo;
@@ -89,7 +89,7 @@ public class MyShopsScreen extends Screen {
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(g, mouseX, mouseY, partialTick);
+        this.renderBackground(g);
         hits.clear();
         Layout l = layout();
 
@@ -156,7 +156,7 @@ public class MyShopsScreen extends Screen {
                 g.drawString(this.font, del, bx1 + 6, by1 + 3, WHITE, false);
                 hits.add(new Hit(bx1, by1, bx2, by2, () -> confirm.open(
                         Component.translatable("gui.create_marketplace.confirm.delete_shop", shop),
-                        () -> PacketDistributor.sendToServer(new DeleteShopPayload(Optional.empty(), Optional.of(shop))))));
+                        () -> MarketNetwork.toServer(new DeleteShopPayload(Optional.empty(), Optional.of(shop))))));
                 int blocksW = this.font.width(blocks);
                 g.drawString(this.font, blocks, bx1 - blocksW - 8, y + 4, 0xFFE7F4F0, false);
             }
@@ -229,7 +229,7 @@ public class MyShopsScreen extends Screen {
         g.drawString(this.font, "X", delX1 + 5, by1 + 4, WHITE, false);
         hits.add(new Hit(delX1, by1, delX2, by1 + 16, () -> confirm.open(
                 Component.translatable("gui.create_marketplace.confirm.delete_offer"),
-                () -> PacketDistributor.sendToServer(new DeleteShopPayload(Optional.of(o.pos()), Optional.empty())))));
+                () -> MarketNetwork.toServer(new DeleteShopPayload(Optional.of(o.pos()), Optional.empty())))));
 
         if (mx >= slotX && mx < slotX + 18 && my >= slotY && my < slotY + 18
                 && o.item() != null && !o.item().isEmpty()) {
@@ -273,8 +273,8 @@ public class MyShopsScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        scrollOffset = Mth.clamp(scrollOffset - (int) (scrollY * 20), 0, maxScroll);
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        scrollOffset = Mth.clamp(scrollOffset - (int) (delta * 20), 0, maxScroll);
         return true;
     }
 

@@ -5,7 +5,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 import org.slf4j.Logger;
 import pl.makoto.createmarketplace.MarketConfig;
 import pl.makoto.createmarketplace.data.MarketOffer;

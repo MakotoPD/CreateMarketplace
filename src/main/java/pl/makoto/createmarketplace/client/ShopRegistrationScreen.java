@@ -6,7 +6,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.PacketDistributor;
+import pl.makoto.createmarketplace.network.MarketNetwork;
 import org.lwjgl.glfw.GLFW;
 import pl.makoto.createmarketplace.data.MarketOffer;
 import pl.makoto.createmarketplace.network.PublishShopPayload;
@@ -86,7 +86,7 @@ public class ShopRegistrationScreen extends Screen {
 
     @Override
     public void render(GuiGraphics g, int mx, int my, float partialTick) {
-        this.renderBackground(g, mx, my, partialTick);
+        this.renderBackground(g);
         hits.clear();
         Layout l = layout();
 
@@ -177,7 +177,7 @@ public class ShopRegistrationScreen extends Screen {
                 this.minecraft.player.getName().getString(),
                 shopName, this.pos, this.minecraft.player.level().dimension().location(),
                 this.item, this.currency, System.currentTimeMillis());
-        PacketDistributor.sendToServer(new PublishShopPayload(offer));
+        MarketNetwork.toServer(new PublishShopPayload(offer));
         this.onClose();
     }
 

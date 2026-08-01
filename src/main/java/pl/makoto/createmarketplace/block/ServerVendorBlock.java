@@ -1,12 +1,12 @@
 package pl.makoto.createmarketplace.block;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -21,7 +21,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.network.PacketDistributor;
 import pl.makoto.createmarketplace.AdminMode;
 import pl.makoto.createmarketplace.data.MarketDatabase;
 import pl.makoto.createmarketplace.network.OpenServerVendorTradePayload;
@@ -39,16 +38,10 @@ import pl.makoto.createmarketplace.network.OpenServerVendorTradePayload;
 public class ServerVendorBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
-    public static final MapCodec<ServerVendorBlock> CODEC = simpleCodec(ServerVendorBlock::new);
 
     public ServerVendorBlock(Properties props) {
         super(props);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override
@@ -67,12 +60,12 @@ public class ServerVendorBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected RenderShape getRenderShape(BlockState state) {
+    public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         }
@@ -89,7 +82,7 @@ public class ServerVendorBlock extends BaseEntityBlock {
                 return InteractionResult.CONSUME;
             }
             // otwiera kontener admin menu — snapshot do bufora dla konstrukcji klienckiej
-            sp.openMenu(new net.minecraft.world.SimpleMenuProvider(
+            net.minecraftforge.network.NetworkHooks.openScreen(sp, new net.minecraft.world.SimpleMenuProvider(
                     (id, inv, p) -> new pl.makoto.createmarketplace.menu.ServerVendorAdminMenu(id, inv, sv),
                     sv.getDisplayName()
             ), buf -> writeAdminSnapshot(buf, sv, pos));
@@ -102,23 +95,23 @@ public class ServerVendorBlock extends BaseEntityBlock {
                     .withStyle(ChatFormatting.YELLOW));
             return InteractionResult.CONSUME;
         }
-        PacketDistributor.sendToPlayer(sp, new OpenServerVendorTradePayload(
+        pl.makoto.createmarketplace.network.MarketNetwork.toPlayer(sp, new OpenServerVendorTradePayload(
                 pos, sv.getTradeItem(), sv.getBuyPrice(), sv.getSellPrice(),
                 sv.isBuyEnabled(), sv.isSellEnabled()));
         return InteractionResult.CONSUME;
     }
 
-    private static void writeAdminSnapshot(RegistryFriendlyByteBuf buf, ServerVendorBlockEntity sv, BlockPos pos) {
+    private static void writeAdminSnapshot(FriendlyByteBuf buf, ServerVendorBlockEntity sv, BlockPos pos) {
         buf.writeBlockPos(pos);
-        ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, sv.getTradeItem());
-        ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, sv.getBuyPrice());
-        ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, sv.getSellPrice());
+        buf.writeItem(sv.getTradeItem());
+        buf.writeItem(sv.getBuyPrice());
+        buf.writeItem(sv.getSellPrice());
         buf.writeBoolean(sv.isBuyEnabled());
         buf.writeBoolean(sv.isSellEnabled());
     }
 
     @Override
-    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         if (!level.isClientSide && level.getServer() != null) {
             try {
                 MarketDatabase db = MarketDatabase.get(level.getServer());
@@ -126,10 +119,10 @@ public class ServerVendorBlock extends BaseEntityBlock {
                         .filter(o -> o.pos().equals(pos))
                         .toList()
                         .forEach(o -> db.removeOffer(o.pos()));
-                PacketDistributor.sendToAllPlayers(
+                pl.makoto.createmarketplace.network.MarketNetwork.toAll(
                         pl.makoto.createmarketplace.network.MarketUpdatePayload.of(db));
             } catch (Exception ignored) {}
         }
-        return super.playerWillDestroy(level, pos, state, player);
+        super.playerWillDestroy(level, pos, state, player);
     }
 }

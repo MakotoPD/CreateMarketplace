@@ -5,9 +5,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.network.NetworkEvent;
 import pl.makoto.createmarketplace.MarketConfig;
 import pl.makoto.createmarketplace.api.MarketApi;
 import pl.makoto.createmarketplace.api.event.MarketOfferEvent;
@@ -37,9 +36,10 @@ public class ServerPayloadHandler {
     /** Kwadrat zasięgu interakcji z blokiem (8 bloków) — jak vanilla {@code Container.stillValid}. */
     private static final double MAX_BLOCK_REACH_SQR = 64.0;
 
-    public static void handlePublishShop(final PublishShopPayload payload, final IPayloadContext context) {
-        context.enqueueWork(() -> {
-            if (!(context.player() instanceof ServerPlayer player)) return;
+    public static void handlePublishShop(final PublishShopPayload payload, final NetworkEvent.Context context) {
+        {
+            ServerPlayer player = context.getSender();
+            if (player == null) return;
 
             MarketOffer clientOffer = payload.offer();
             boolean admin = pl.makoto.createmarketplace.AdminMode.isAdmin(player.getUUID());
@@ -111,7 +111,7 @@ public class ServerPayloadHandler {
 
             // Step 7: Fire event, persist, broadcast
             var event = new MarketOfferEvent.Register(serverOffer, player);
-            if (NeoForge.EVENT_BUS.post(event).isCanceled()) {
+            if (MinecraftForge.EVENT_BUS.post(event)) {
                 player.sendSystemMessage(Component.translatable("message.create_marketplace.cancelled_by_mod")
                     .withStyle(ChatFormatting.RED));
                 return;
@@ -120,14 +120,14 @@ public class ServerPayloadHandler {
             db.addOffer(serverOffer);
             // od razu zmierz stan, żeby nowy sklep nie wisiał jako "nieznany" do najbliższego skanu
             pl.makoto.createmarketplace.util.StockChecker.refreshOne(player.serverLevel(), serverOffer);
-            NeoForge.EVENT_BUS.post(new MarketOfferEvent.Registered(serverOffer, player));
+            MinecraftForge.EVENT_BUS.post(new MarketOfferEvent.Registered(serverOffer, player));
 
             LOGGER.info("Server received and saved offer for shop: {} (owner: {})", shopName, ownerName);
             player.sendSystemMessage(Component.translatable(
                     admin ? "message.create_marketplace.registration_success_server" : "message.create_marketplace.registration_success",
                     shopName).withStyle(ChatFormatting.GREEN));
-            PacketDistributor.sendToAllPlayers(MarketUpdatePayload.of(db));
-        });
+            MarketNetwork.toAll(MarketUpdatePayload.of(db));
+        }
     }
 
     /**
@@ -152,9 +152,10 @@ public class ServerPayloadHandler {
         return false;
     }
 
-    public static void handleRefreshRequest(final RequestMarketRefreshPayload payload, final IPayloadContext context) {
-        context.enqueueWork(() -> {
-            if (context.player() instanceof ServerPlayer player) {
+    public static void handleRefreshRequest(final RequestMarketRefreshPayload payload, final NetworkEvent.Context context) {
+        {
+            ServerPlayer player = context.getSender();
+            if (player != null) {
                 MarketDatabase db = MarketDatabase.get(player.server);
 
                 // Doskan przy otwarciu GUI — łapie to, co akurat jest w załadowanych
@@ -162,16 +163,17 @@ public class ServerPayloadHandler {
                 pl.makoto.createmarketplace.util.StockChecker.scan(player.server);
 
                 // Wysyłamy do gracza, który zażądał odświeżenia
-                PacketDistributor.sendToPlayer(player, MarketUpdatePayload.of(db));
+                MarketNetwork.toPlayer(player, MarketUpdatePayload.of(db));
 
                 LOGGER.debug("Server sent {} offers to player {}", db.getOffers().size(), player.getName().getString());
             }
-        });
+        }
     }
 
-    public static void handleDeleteShop(final DeleteShopPayload payload, final IPayloadContext context) {
-        context.enqueueWork(() -> {
-            if (context.player() instanceof ServerPlayer player) {
+    public static void handleDeleteShop(final DeleteShopPayload payload, final NetworkEvent.Context context) {
+        {
+            ServerPlayer player = context.getSender();
+            if (player != null) {
                 MarketDatabase db = MarketDatabase.get(player.server);
 
                 boolean admin = pl.makoto.createmarketplace.AdminMode.isAdmin(player.getUUID());
@@ -192,18 +194,19 @@ public class ServerPayloadHandler {
                 if (result != null && result.changed()) {
                     for (MarketOffer offer : result.removed()) {
                         db.removeOffer(offer.pos());
-                        NeoForge.EVENT_BUS.post(new MarketOfferEvent.Removed(offer, player));
+                        MinecraftForge.EVENT_BUS.post(new MarketOfferEvent.Removed(offer, player));
                     }
                     player.sendSystemMessage(Component.translatable("message.create_marketplace.delete_success").withStyle(net.minecraft.ChatFormatting.GREEN));
-                    PacketDistributor.sendToAllPlayers(MarketUpdatePayload.of(db));
+                    MarketNetwork.toAll(MarketUpdatePayload.of(db));
                 }
             }
-        });
+        }
     }
 
-    public static void handleSaveServerVendor(final SaveServerVendorPayload payload, final IPayloadContext context) {
-        context.enqueueWork(() -> {
-            if (!(context.player() instanceof ServerPlayer player)) return;
+    public static void handleSaveServerVendor(final SaveServerVendorPayload payload, final NetworkEvent.Context context) {
+        {
+            ServerPlayer player = context.getSender();
+            if (player == null) return;
             if (!pl.makoto.createmarketplace.AdminMode.isAdmin(player.getUUID())) {
                 player.sendSystemMessage(Component.translatable("message.create_marketplace.server_vendor.admin_required")
                         .withStyle(ChatFormatting.RED));
@@ -223,12 +226,13 @@ public class ServerPayloadHandler {
             }
             sv.applySnapshot(payload.tradeItem(), payload.buyPrice(), payload.sellPrice(),
                     payload.buyEnabled(), payload.sellEnabled());
-        });
+        }
     }
 
-    public static void handleServerVendorTrade(final ServerVendorTradePayload payload, final IPayloadContext context) {
-        context.enqueueWork(() -> {
-            if (!(context.player() instanceof ServerPlayer player)) return;
+    public static void handleServerVendorTrade(final ServerVendorTradePayload payload, final NetworkEvent.Context context) {
+        {
+            ServerPlayer player = context.getSender();
+            if (player == null) return;
             BlockPos pos = payload.pos();
             if (player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > MAX_BLOCK_REACH_SQR) {
                 sendResult(player, false, "message.create_marketplace.server_vendor.too_far", 0);
@@ -295,7 +299,7 @@ public class ServerPayloadHandler {
                 int have = 0;
                 for (int i = 0; i < inv.getContainerSize(); i++) {
                     net.minecraft.world.item.ItemStack s = inv.getItem(i);
-                    if (!s.isEmpty() && net.minecraft.world.item.ItemStack.isSameItemSameComponents(s, template)) {
+                    if (!s.isEmpty() && net.minecraft.world.item.ItemStack.isSameItemSameTags(s, template)) {
                         have += s.getCount();
                     }
                 }
@@ -307,7 +311,7 @@ public class ServerPayloadHandler {
                 for (int i = 0; i < inv.getContainerSize() && remaining > 0; i++) {
                     net.minecraft.world.item.ItemStack s = inv.getItem(i);
                     if (s.isEmpty()) continue;
-                    if (!net.minecraft.world.item.ItemStack.isSameItemSameComponents(s, template)) continue;
+                    if (!net.minecraft.world.item.ItemStack.isSameItemSameTags(s, template)) continue;
                     int take = Math.min(remaining, s.getCount());
                     s.shrink(take);
                     remaining -= take;
@@ -322,11 +326,11 @@ public class ServerPayloadHandler {
                 }
                 sendResult(player, true, "message.create_marketplace.server_vendor.ok", qty);
             }
-        });
+        }
     }
 
     private static void sendResult(ServerPlayer player, boolean ok, String key, int units) {
-        PacketDistributor.sendToPlayer(player, new ServerVendorTradeResultPayload(ok, key, units));
+        MarketNetwork.toPlayer(player, new ServerVendorTradeResultPayload(ok, key, units));
     }
 
     /**

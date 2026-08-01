@@ -141,12 +141,12 @@ public class NumismaticsShopHandler implements IShopHandler {
         try {
             ItemStack sellingItem = ItemStack.EMPTY;
             ItemStack currencyItem = ItemStack.EMPTY;
-            CompoundTag nbt = be.saveWithFullMetadata(level.registryAccess());
+            CompoundTag nbt = be.saveWithFullMetadata();
 
             if (isVendor) {
                 // Logika dla Vendor
                 if (nbt.contains("Selling", 10)) {
-                    sellingItem = ItemStack.parseOptional(level.registryAccess(), nbt.getCompound("Selling"));
+                    sellingItem = ItemStack.of(nbt.getCompound("Selling"));
                 } else {
                     sellingItem = ShopScanner.findItemStackRecursive(be, 3);
                 }
@@ -195,8 +195,7 @@ public class NumismaticsShopHandler implements IShopHandler {
                                 if (!entries.isEmpty()) {
                                     CompoundTag entry = entries.getCompound(0);
                                     if (sellingItem.isEmpty() && entry.contains("item_stack")) {
-                                        sellingItem = ItemStack.parseOptional(level.registryAccess(),
-                                                entry.getCompound("item_stack"));
+                                        sellingItem = ItemStack.of(entry.getCompound("item_stack"));
                                     }
                                     if (!sellingItem.isEmpty() && entry.contains("count")) {
                                         sellingItem.setCount(entry.getInt("count"));
@@ -207,7 +206,7 @@ public class NumismaticsShopHandler implements IShopHandler {
                     }
                 }
                 if (nbt.contains("Filter")) {
-                    currencyItem = ItemStack.parseOptional(level.registryAccess(), nbt.getCompound("Filter"));
+                    currencyItem = ItemStack.of(nbt.getCompound("Filter"));
                     if (nbt.contains("FilterAmount")) {
                         currencyItem.setCount(nbt.getInt("FilterAmount"));
                     } else if (nbt.contains("Price")) {

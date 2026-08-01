@@ -2,7 +2,7 @@ package pl.makoto.createmarketplace.client.integration;
 
 import dev.emi.emi.config.EmiConfig;
 import dev.emi.emi.screen.EmiScreenManager;
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 
 /**
  * Klasa pomocnicza do bezpiecznej integracji z EMI.

@@ -201,7 +201,7 @@ public final class Coinage {
         int total = 0;
         for (int i = 0; i < inv.getContainerSize(); i++) {
             ItemStack st = inv.getItem(i);
-            if (!st.isEmpty() && ItemStack.isSameItemSameComponents(st, template)) {
+            if (!st.isEmpty() && ItemStack.isSameItemSameTags(st, template)) {
                 total += st.getCount();
             }
         }
@@ -219,7 +219,7 @@ public final class Coinage {
         for (int i = 0; i < inv.getContainerSize() && remaining > 0; i++) {
             ItemStack st = inv.getItem(i);
             if (st.isEmpty()) continue;
-            if (!ItemStack.isSameItemSameComponents(st, template)) continue;
+            if (!ItemStack.isSameItemSameTags(st, template)) continue;
             int take = Math.min(remaining, st.getCount());
             st.shrink(take);
             remaining -= take;

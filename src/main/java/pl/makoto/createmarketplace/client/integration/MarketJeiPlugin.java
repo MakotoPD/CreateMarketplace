@@ -13,7 +13,7 @@ import java.util.List;
 
 @JeiPlugin
 public class MarketJeiPlugin implements IModPlugin {
-    private static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(CreateMarketplace.MODID, "jei_plugin");
+    private static final ResourceLocation ID = new ResourceLocation(CreateMarketplace.MODID, "jei_plugin");
 
     @Override
     public ResourceLocation getPluginUid() {

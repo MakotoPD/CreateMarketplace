@@ -13,15 +13,16 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.slf4j.Logger;
 import pl.makoto.createmarketplace.registry.ItemRegistry;
 
-@EventBusSubscriber(modid = CreateMarketplace.MODID)
+@Mod.EventBusSubscriber(modid = CreateMarketplace.MODID)
 public class CommonEvents {
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -49,7 +50,7 @@ public class CommonEvents {
             event.setCanceled(true);
             event.setCancellationResult(InteractionResult.SUCCESS);
             if (!level.isClientSide()) {
-                CompoundTag nbt = be.saveWithFullMetadata(level.registryAccess());
+                CompoundTag nbt = be.saveWithFullMetadata();
                 player.sendSystemMessage(Component.literal("§e[Debug Paper] §fData for §6" + be.getClass().getSimpleName() + "§f at §7" + pos.toShortString() + ":"));
                 player.sendSystemMessage(Component.literal(nbt.toString()));
             }
@@ -98,8 +99,7 @@ public class CommonEvents {
                     LOGGER.error("Failed to retrieve existing shops for player {}", player.getUUID(), e);
                 }
 
-                net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(
-                        serverPlayer,
+                pl.makoto.createmarketplace.network.MarketNetwork.toPlayer(serverPlayer,
                         new pl.makoto.createmarketplace.network.OpenRegistrationGuiPayload(pos, sellingItem,
                                 currencyItem, existingShops));
             }
@@ -136,7 +136,7 @@ public class CommonEvents {
                 now ? "message.create_marketplace.adminmode_on" : "message.create_marketplace.adminmode_off")
                 .withStyle(now ? ChatFormatting.GREEN : ChatFormatting.YELLOW));
         // synchronizuj stan do klienta (wskaźnik w GUI + filtr "Moje sklepy")
-        net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player,
+        pl.makoto.createmarketplace.network.MarketNetwork.toPlayer(player,
                 new pl.makoto.createmarketplace.network.AdminModePayload(now));
         return 1;
     }
@@ -159,16 +159,18 @@ public class CommonEvents {
      * tylko wtedy, gdy którykolwiek stan faktycznie się zmienił.
      */
     @SubscribeEvent
-    public static void onServerTick(net.neoforged.neoforge.event.tick.ServerTickEvent.Post event) {
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
         if (--stockCheckTimer > 0) return;
         stockCheckTimer = Math.max(1, MarketConfig.STOCK_CHECK_INTERVAL.get()) * 20;
 
-        var server = event.getServer();
+        net.minecraft.server.MinecraftServer server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
+        if (server == null) return;
         if (server.getPlayerList().getPlayerCount() == 0) return; // nikt nie patrzy — nie licz
 
         try {
             if (pl.makoto.createmarketplace.util.StockChecker.scan(server)) {
-                net.neoforged.neoforge.network.PacketDistributor.sendToAllPlayers(
+                pl.makoto.createmarketplace.network.MarketNetwork.toAll(
                         pl.makoto.createmarketplace.network.MarketUpdatePayload.of(
                                 pl.makoto.createmarketplace.data.MarketDatabase.get(server)));
             }

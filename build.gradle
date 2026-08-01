@@ -79,6 +79,10 @@ repositories {
         name = 'BlameJared'
         url = 'https://maven.blamejared.com'
     }
+    maven {
+        name = 'TerraformersMC'
+        url = 'https://maven.terraformersmc.com/releases'
+    }
     // Create 6.x i jego zależności (Ponder, Flywheel, Registrate)
     maven {
         name = 'Jared'
@@ -93,6 +97,14 @@ dependencies {
     // Mod nie importuje ich klas w czasie kompilacji (cała integracja idzie przez
     // refleksję i NBT), więc są potrzebne wyłącznie do uruchomienia w dev.
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // JEI — dla 1.20.1 artefakt nazywa się *-forge-*, na 1.21.1 *-neoforge-*
+    compileOnly "mezz.jei:jei-1.20.1-forge-api:${jei_version}"
+    runtimeOnly "mezz.jei:jei-1.20.1-forge:${jei_version}"
+
+    // EMI
+    compileOnly "dev.emi:emi-forge:${emi_version}"
+    runtimeOnly "dev.emi:emi-forge:${emi_version}"
 
     // Testy — bez zależności od Minecrafta, przechodzą z gałęzi 1.21.1 bez zmian.
     testImplementation 'net.jqwik:jqwik:1.9.2'

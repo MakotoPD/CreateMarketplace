@@ -5,7 +5,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.PacketDistributor;
+import pl.makoto.createmarketplace.network.MarketNetwork;
 import pl.makoto.createmarketplace.menu.ServerVendorAdminMenu;
 import pl.makoto.createmarketplace.network.SaveServerVendorPayload;
 import pl.makoto.createmarketplace.util.Coinage;
@@ -197,7 +197,7 @@ public class ServerVendorAdminScreen extends AbstractContainerScreen<ServerVendo
 
     private void save() {
         if (this.minecraft == null || this.minecraft.player == null) return;
-        PacketDistributor.sendToServer(new SaveServerVendorPayload(
+        MarketNetwork.toServer(new SaveServerVendorPayload(
                 menu.pos,
                 menu.getCurrentTradeItem(),
                 menu.getCurrentBuyPrice(),
@@ -209,18 +209,18 @@ public class ServerVendorAdminScreen extends AbstractContainerScreen<ServerVendo
 
     /** Scroll wheel na slotem przedmiotu/kupna/sprzedaży: regulacja count. */
     @Override
-    public boolean mouseScrolled(double mx, double my, double dx, double dy) {
+    public boolean mouseScrolled(double mx, double my, double delta) {
         int sx = leftPos + 24, sw = 18;
         int[] slotYs = {topPos + 24, topPos + 52, topPos + 80};
         int[] incIds = {ServerVendorAdminMenu.BTN_TRADE_INC, ServerVendorAdminMenu.BTN_BUY_INC, ServerVendorAdminMenu.BTN_SELL_INC};
         int[] decIds = {ServerVendorAdminMenu.BTN_TRADE_DEC, ServerVendorAdminMenu.BTN_BUY_DEC, ServerVendorAdminMenu.BTN_SELL_DEC};
         for (int i = 0; i < 3; i++) {
             if (mx >= sx && mx < sx + sw && my >= slotYs[i] && my < slotYs[i] + sw) {
-                if (dy > 0) sendBtn(incIds[i]); else if (dy < 0) sendBtn(decIds[i]);
+                if (delta > 0) sendBtn(incIds[i]); else if (delta < 0) sendBtn(decIds[i]);
                 return true;
             }
         }
-        return super.mouseScrolled(mx, my, dx, dy);
+        return super.mouseScrolled(mx, my, delta);
     }
 
     @Override

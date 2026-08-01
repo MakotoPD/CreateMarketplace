@@ -1,22 +1,24 @@
 package pl.makoto.createmarketplace.client;
 
 import com.mojang.logging.LogUtils;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.slf4j.Logger;
 import pl.makoto.createmarketplace.CreateMarketplace;
 
-@EventBusSubscriber(modid = CreateMarketplace.MODID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = CreateMarketplace.MODID, value = Dist.CLIENT)
 public class ClientGameEvents {
     private static final Logger LOGGER = LogUtils.getLogger();
     @SubscribeEvent
-    public static void onClientTick(net.neoforged.neoforge.client.event.ClientTickEvent.Post event) {
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
         net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
         if (mc.player != null) {
             while (ClientEvents.OPEN_MARKET_KEY.consumeClick()) {
                 if (mc.screen == null) {
-                    net.neoforged.neoforge.network.PacketDistributor.sendToServer(new pl.makoto.createmarketplace.network.RequestMarketRefreshPayload());
+                    pl.makoto.createmarketplace.network.MarketNetwork.toServer(new pl.makoto.createmarketplace.network.RequestMarketRefreshPayload());
                     mc.setScreen(new GlobalMarketScreen(pl.makoto.createmarketplace.network.ClientPayloadHandler.getCachedOffers()));
                 }
             }
@@ -24,20 +26,20 @@ public class ClientGameEvents {
     }
 
     @SubscribeEvent
-    public static void onLoggingOut(net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut event) {
+    public static void onLoggingOut(net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggingOut event) {
         // admin mode resetuje się serwerowo przy wylogowaniu — czyścimy też cień klienta
         ClientAdminState.set(false);
     }
 
     @SubscribeEvent
-    public static void onScreenInit(net.neoforged.neoforge.client.event.ScreenEvent.Init.Post event) {
+    public static void onScreenInit(net.minecraftforge.client.event.ScreenEvent.Init.Post event) {
         if (event.getScreen() instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> screen) {
             LOGGER.debug("Screen init: {}", screen.getClass().getSimpleName());
 
             // Dynamiczne pozycjonowanie na podstawie obecności EMI i konfiguracji
             int x, y;
 
-            if (net.neoforged.fml.ModList.get().isLoaded("emi")) {
+            if (net.minecraftforge.fml.ModList.get().isLoaded("emi")) {
                 // Gdy EMI jest obecne, trzymamy się jego przycisków (zachowanie natywne dla EMI)
                 x = 2 + pl.makoto.createmarketplace.client.integration.MarketEmiCompat.getEmiOffset();
                 y = screen.height - 22;
@@ -63,7 +65,7 @@ public class ClientGameEvents {
             pl.makoto.createmarketplace.client.integration.MarketButton marketButton = new pl.makoto.createmarketplace.client.integration.MarketButton(x, y, b -> {
                 net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
                 if (mc.player != null) {
-                    net.neoforged.neoforge.network.PacketDistributor.sendToServer(new pl.makoto.createmarketplace.network.RequestMarketRefreshPayload());
+                    pl.makoto.createmarketplace.network.MarketNetwork.toServer(new pl.makoto.createmarketplace.network.RequestMarketRefreshPayload());
                     mc.setScreen(new pl.makoto.createmarketplace.client.GlobalMarketScreen(pl.makoto.createmarketplace.network.ClientPayloadHandler.getCachedOffers()));
                 }
             });

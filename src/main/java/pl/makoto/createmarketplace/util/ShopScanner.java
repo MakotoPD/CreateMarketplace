@@ -77,7 +77,7 @@ public class ShopScanner {
     public static ItemStack getCoinItemByName(String name, int count) {
         try {
             // Próbujemy znaleźć przedmiot monety w rejestrze po ID: numismatics:<name>
-            net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("numismatics", name);
+            net.minecraft.resources.ResourceLocation id = new net.minecraft.resources.ResourceLocation("numismatics", name);
             net.minecraft.world.item.Item item = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(id);
             if (item != null && item != net.minecraft.world.item.Items.AIR) {
                 return new ItemStack(item, count);

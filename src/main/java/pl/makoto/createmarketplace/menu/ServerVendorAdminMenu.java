@@ -1,7 +1,7 @@
 package pl.makoto.createmarketplace.menu;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -53,12 +53,12 @@ public class ServerVendorAdminMenu extends AbstractContainerMenu {
     public boolean sellEnabled;
 
     /** Konstruktor klienta — dane z bufora. */
-    public ServerVendorAdminMenu(int id, Inventory inv, RegistryFriendlyByteBuf buf) {
+    public ServerVendorAdminMenu(int id, Inventory inv, FriendlyByteBuf buf) {
         this(id, inv, null,
                 buf.readBlockPos(),
-                ItemStack.OPTIONAL_STREAM_CODEC.decode(buf),
-                ItemStack.OPTIONAL_STREAM_CODEC.decode(buf),
-                ItemStack.OPTIONAL_STREAM_CODEC.decode(buf),
+                buf.readItem(),
+                buf.readItem(),
+                buf.readItem(),
                 buf.readBoolean(),
                 buf.readBoolean());
     }
@@ -139,7 +139,7 @@ public class ServerVendorAdminMenu extends AbstractContainerMenu {
                     ItemStack s = slot.getItem();
                     if (s.isEmpty()) {
                         slot.set(carried.copyWithCount(1));
-                    } else if (ItemStack.isSameItemSameComponents(s, carried) && s.getCount() < s.getMaxStackSize()) {
+                    } else if (ItemStack.isSameItemSameTags(s, carried) && s.getCount() < s.getMaxStackSize()) {
                         s.grow(1);
                         slot.set(s);
                     }

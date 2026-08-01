@@ -1,8 +1,8 @@
 package pl.makoto.createmarketplace.api.event;
 
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.bus.api.Event;
-import net.neoforged.bus.api.ICancellableEvent;
+import net.minecraftforge.eventbus.api.Cancelable;
+import net.minecraftforge.eventbus.api.Event;
 import pl.makoto.createmarketplace.data.MarketOffer;
 
 /**
@@ -28,7 +28,8 @@ public abstract class MarketOfferEvent extends Event {
     /**
      * Wywoływany tuż przed zarejestrowaniem nowej oferty. Pozwala na anulowanie rejestracji.
      */
-    public static class Register extends MarketOfferEvent implements ICancellableEvent {
+    @Cancelable
+    public static class Register extends MarketOfferEvent {
         public Register(MarketOffer offer, ServerPlayer player) {
             super(offer, player);
         }

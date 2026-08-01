@@ -4,15 +4,17 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 import pl.makoto.createmarketplace.CreateMarketplace;
 import pl.makoto.createmarketplace.block.ServerVendorBlock;
 
 public class BlockRegistry {
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(CreateMarketplace.MODID);
+    public static final DeferredRegister<Block> BLOCKS =
+            DeferredRegister.create(ForgeRegistries.BLOCKS, CreateMarketplace.MODID);
 
-    public static final DeferredBlock<ServerVendorBlock> SERVER_VENDOR = BLOCKS.register(
+    public static final RegistryObject<ServerVendorBlock> SERVER_VENDOR = BLOCKS.register(
             "server_vendor",
             () -> new ServerVendorBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.METAL)
