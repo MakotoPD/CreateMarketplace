@@ -7,8 +7,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import pl.makoto.createmarketplace.api.IShopHandler;
 import pl.makoto.createmarketplace.api.ShopResult;
 import pl.makoto.createmarketplace.block.ServerVendorBlockEntity;
+import pl.makoto.createmarketplace.data.StockInfo;
 
 import java.util.Optional;
+import java.util.OptionalInt;
 
 /**
  * Rozpoznaje blok Server Vendor dla MarketApi (registration_book).
@@ -17,6 +19,14 @@ import java.util.Optional;
  * nie da się go opublikować na Global Market.
  */
 public class ServerVendorShopHandler implements IShopHandler {
+
+    /** Server Vendor handluje w imieniu serwera — nie ma magazynu, nigdy się nie kończy. */
+    @Override
+    public OptionalInt getStock(BlockEntity be, Level level, BlockPos pos) {
+        if (!(be instanceof ServerVendorBlockEntity sv)) return OptionalInt.empty();
+        if (sv.getTradeItem().isEmpty()) return OptionalInt.of(0);
+        return OptionalInt.of(StockInfo.INFINITE);
+    }
 
     @Override
     public Optional<ShopResult> tryResolve(BlockEntity be, Level level, BlockPos pos) {

@@ -147,4 +147,33 @@ public class CommonEvents {
             AdminMode.clear(player.getUUID());
         }
     }
+
+    // --- Cykliczne odświeżanie stanu magazynowego sklepów ---
+
+    private static int stockCheckTimer = 0;
+
+    /**
+     * Skanuje sklepy co {@code stockCheckIntervalSeconds}. Skan dotyka wyłącznie
+     * ofert w załadowanych chunkach, więc jego koszt zależy od tego, ile sklepów
+     * jest realnie w pamięci, a nie ile jest ich na rynku. Rozsyłamy aktualizację
+     * tylko wtedy, gdy którykolwiek stan faktycznie się zmienił.
+     */
+    @SubscribeEvent
+    public static void onServerTick(net.neoforged.neoforge.event.tick.ServerTickEvent.Post event) {
+        if (--stockCheckTimer > 0) return;
+        stockCheckTimer = Math.max(1, MarketConfig.STOCK_CHECK_INTERVAL.get()) * 20;
+
+        var server = event.getServer();
+        if (server.getPlayerList().getPlayerCount() == 0) return; // nikt nie patrzy — nie licz
+
+        try {
+            if (pl.makoto.createmarketplace.util.StockChecker.scan(server)) {
+                net.neoforged.neoforge.network.PacketDistributor.sendToAllPlayers(
+                        pl.makoto.createmarketplace.network.MarketUpdatePayload.of(
+                                pl.makoto.createmarketplace.data.MarketDatabase.get(server)));
+            }
+        } catch (Exception e) {
+            LOGGER.error("Stock check failed", e);
+        }
+    }
 }

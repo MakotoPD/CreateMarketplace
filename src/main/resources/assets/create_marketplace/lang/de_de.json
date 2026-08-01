@@ -4,7 +4,6 @@
   "key.createmarketplace.open_market": "Globalen Markt öffnen",
   "key.categories.createmarketplace": "Create: Marketplace",
   "itemGroup.create_marketplace": "Create: Marketplace",
-  
   "gui.create_marketplace.global_market.title": "Globaler Markt",
   "gui.create_marketplace.global_market.my_shops": "Meine Shops",
   "gui.create_marketplace.global_market.search": "Suchen...",
@@ -17,7 +16,6 @@
   "gui.create_marketplace.global_market.favorites_only": "★ Favoriten",
   "gui.create_marketplace.global_market.all_shops": "☆ Alle",
   "gui.create_marketplace.global_market.back": "Zurück",
-  
   "gui.create_marketplace.owner.server": "Server",
   "gui.create_marketplace.tab.market": "Markt",
   "gui.create_marketplace.tab.favorites": "Favoriten",
@@ -31,16 +29,22 @@
   "gui.create_marketplace.registration.publish": "Veröffentlichen",
   "gui.create_marketplace.registration.name": "Shop-Name",
   "gui.create_marketplace.registration.add_to_existing": "Zu existierendem Shop hinzufügen:",
-  
   "gui.create_marketplace.my_shops.title": "Meine Shops",
   "gui.create_marketplace.my_shops.delete": "Löschen",
   "gui.create_marketplace.my_shops.no_shops": "Du hast keine Shops.",
   "gui.create_marketplace.my_shops.blocks": "Blöcke: %s",
   "gui.create_marketplace.my_shops.price": "Preis: %s",
   "gui.create_marketplace.my_shops.pos": "Pos: %s",
-  
   "message.create_marketplace.registration_success": "Server hat deinen Shop erfolgreich registriert: %s",
   "message.create_marketplace.player_only": "Nur ein Spieler kann diesen Befehl verwenden.",
   "message.create_marketplace.no_card": "Du hast kein Registrierungsbuch im Inventar!",
-  "message.create_marketplace.delete_success": "Shop(s) erfolgreich gelöscht."
+  "message.create_marketplace.delete_success": "Shop(s) erfolgreich gelöscht.",
+  "gui.create_marketplace.stock.unknown": "Bestand unbekannt (Laden nicht kürzlich geprüft)",
+  "gui.create_marketplace.stock.unlimited": "Unbegrenzter Bestand",
+  "gui.create_marketplace.stock.empty": "Nicht vorrätig",
+  "gui.create_marketplace.stock.available": "Vorrätig (noch %s Handel)",
+  "gui.create_marketplace.stock.available_stale": "Zuletzt vorrätig gesehen (%s Handel)",
+  "gui.create_marketplace.stock.age_now": "gerade eben geprüft",
+  "gui.create_marketplace.stock.age_min": "vor %s Min. geprüft",
+  "gui.create_marketplace.stock.age_hour": "vor %s Std. geprüft"
 }

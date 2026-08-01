@@ -35,7 +35,7 @@ class DeleteShopChangedFlagPropertyTest {
             @ForAll("blockPositions") BlockPos targetPos,
             @ForAll("playerIds") UUID playerId
     ) {
-        DeleteResult result = DeleteShopLogic.deleteByPosition(offers, targetPos, playerId);
+        DeleteResult result = DeleteShopLogic.deleteByPosition(offers, targetPos, playerId, false);
 
         // Check if there actually was an offer owned by this player at this position
         boolean playerOfferExistsAtPos = offers.stream()
@@ -107,7 +107,7 @@ class DeleteShopChangedFlagPropertyTest {
             @ForAll("blockPositions") BlockPos targetPos,
             @ForAll("playerIds") UUID playerId
     ) {
-        DeleteResult result = DeleteShopLogic.deleteByPosition(offers, targetPos, playerId);
+        DeleteResult result = DeleteShopLogic.deleteByPosition(offers, targetPos, playerId, false);
 
         // No removed offer should belong to a different player
         for (MarketOffer removed : result.removed()) {

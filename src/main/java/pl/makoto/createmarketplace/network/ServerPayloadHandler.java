@@ -23,6 +23,20 @@ public class ServerPayloadHandler {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int MAX_SHOP_NAME_LENGTH = 32;
 
+    /**
+     * Górny limit ilości w jednej transakcji Server Vendor.
+     *
+     * Klient przysyła {@code quantity} jako surowy varint, więc bez tego limitu
+     * iloczyn {@code count × wartość_monety × qty} przekracza zakres int, staje się
+     * ujemny i przechodzi walidację środków — gracz dostaje towar za darmo.
+     * Przy 4096: 64 × 4096 (sun) × 4096 = 1_073_741_824 < Integer.MAX_VALUE.
+     * Limit jest i tak wielokrotnie wyższy niż pojemność ekwipunku (36 × 64).
+     */
+    private static final int MAX_TRADE_QUANTITY = 4096;
+
+    /** Kwadrat zasięgu interakcji z blokiem (8 bloków) — jak vanilla {@code Container.stillValid}. */
+    private static final double MAX_BLOCK_REACH_SQR = 64.0;
+
     public static void handlePublishShop(final PublishShopPayload payload, final IPayloadContext context) {
         context.enqueueWork(() -> {
             if (!(context.player() instanceof ServerPlayer player)) return;
@@ -104,13 +118,15 @@ public class ServerPayloadHandler {
             }
 
             db.addOffer(serverOffer);
+            // od razu zmierz stan, żeby nowy sklep nie wisiał jako "nieznany" do najbliższego skanu
+            pl.makoto.createmarketplace.util.StockChecker.refreshOne(player.serverLevel(), serverOffer);
             NeoForge.EVENT_BUS.post(new MarketOfferEvent.Registered(serverOffer, player));
 
             LOGGER.info("Server received and saved offer for shop: {} (owner: {})", shopName, ownerName);
             player.sendSystemMessage(Component.translatable(
                     admin ? "message.create_marketplace.registration_success_server" : "message.create_marketplace.registration_success",
                     shopName).withStyle(ChatFormatting.GREEN));
-            PacketDistributor.sendToAllPlayers(new MarketUpdatePayload(db.getOffers()));
+            PacketDistributor.sendToAllPlayers(MarketUpdatePayload.of(db));
         });
     }
 
@@ -140,12 +156,15 @@ public class ServerPayloadHandler {
         context.enqueueWork(() -> {
             if (context.player() instanceof ServerPlayer player) {
                 MarketDatabase db = MarketDatabase.get(player.server);
-                List<MarketOffer> offers = db.getOffers();
-                
+
+                // Doskan przy otwarciu GUI — łapie to, co akurat jest w załadowanych
+                // chunkach. Reszta poleci z ostatnim znanym odczytem i jego wiekiem.
+                pl.makoto.createmarketplace.util.StockChecker.scan(player.server);
+
                 // Wysyłamy do gracza, który zażądał odświeżenia
-                PacketDistributor.sendToPlayer(player, new MarketUpdatePayload(offers));
-                
-                LOGGER.info("Server sent {} offers to player {}", offers.size(), player.getName().getString());
+                PacketDistributor.sendToPlayer(player, MarketUpdatePayload.of(db));
+
+                LOGGER.debug("Server sent {} offers to player {}", db.getOffers().size(), player.getName().getString());
             }
         });
     }
@@ -160,33 +179,23 @@ public class ServerPayloadHandler {
                 java.util.UUID ownerFilter = admin
                         ? pl.makoto.createmarketplace.AdminMode.SERVER_UUID : player.getUUID();
 
-                boolean changed = false;
+                DeleteShopLogic.DeleteResult result = null;
                 if (payload.posToRemove().isPresent()) {
-                    BlockPos pos = payload.posToRemove().get();
                     // usuwanie pojedynczej oferty: admin może KAŻDĄ, gracz tylko własną
-                    java.util.Optional<MarketOffer> existing = db.getOffers().stream()
-                        .filter(o -> o.pos().equals(pos) && (admin || o.ownerId().equals(player.getUUID())))
-                        .findFirst();
-                    if (existing.isPresent()) {
-                        db.removeOffer(pos);
-                        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new pl.makoto.createmarketplace.api.event.MarketOfferEvent.Removed(existing.get(), player));
-                        changed = true;
-                    }
+                    result = DeleteShopLogic.deleteByPosition(
+                            db.getOffers(), payload.posToRemove().get(), player.getUUID(), admin);
                 } else if (payload.shopNameToRemove().isPresent()) {
-                    String shopName = payload.shopNameToRemove().get();
-                    List<MarketOffer> toRemove = db.getOffers().stream()
-                        .filter(o -> o.shopName().equals(shopName) && o.ownerId().equals(ownerFilter))
-                        .toList();
-                    for (MarketOffer offer : toRemove) {
-                        db.removeOffer(offer.pos());
-                        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new pl.makoto.createmarketplace.api.event.MarketOfferEvent.Removed(offer, player));
-                    }
-                    changed = !toRemove.isEmpty();
+                    result = DeleteShopLogic.deleteByShopName(
+                            db.getOffers(), payload.shopNameToRemove().get(), ownerFilter);
                 }
 
-                if (changed) {
+                if (result != null && result.changed()) {
+                    for (MarketOffer offer : result.removed()) {
+                        db.removeOffer(offer.pos());
+                        NeoForge.EVENT_BUS.post(new MarketOfferEvent.Removed(offer, player));
+                    }
                     player.sendSystemMessage(Component.translatable("message.create_marketplace.delete_success").withStyle(net.minecraft.ChatFormatting.GREEN));
-                    PacketDistributor.sendToAllPlayers(new MarketUpdatePayload(db.getOffers()));
+                    PacketDistributor.sendToAllPlayers(MarketUpdatePayload.of(db));
                 }
             }
         });
@@ -201,9 +210,17 @@ public class ServerPayloadHandler {
                 return;
             }
             BlockPos pos = payload.pos();
-            if (player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 64) return;
+            if (player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > MAX_BLOCK_REACH_SQR) {
+                player.sendSystemMessage(Component.translatable("message.create_marketplace.server_vendor.too_far")
+                        .withStyle(ChatFormatting.RED));
+                return;
+            }
             BlockEntity be = player.serverLevel().getBlockEntity(pos);
-            if (!(be instanceof pl.makoto.createmarketplace.block.ServerVendorBlockEntity sv)) return;
+            if (!(be instanceof pl.makoto.createmarketplace.block.ServerVendorBlockEntity sv)) {
+                player.sendSystemMessage(Component.translatable("message.create_marketplace.invalid_block")
+                        .withStyle(ChatFormatting.RED));
+                return;
+            }
             sv.applySnapshot(payload.tradeItem(), payload.buyPrice(), payload.sellPrice(),
                     payload.buyEnabled(), payload.sellEnabled());
         });
@@ -213,7 +230,7 @@ public class ServerPayloadHandler {
         context.enqueueWork(() -> {
             if (!(context.player() instanceof ServerPlayer player)) return;
             BlockPos pos = payload.pos();
-            if (player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 64) {
+            if (player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > MAX_BLOCK_REACH_SQR) {
                 sendResult(player, false, "message.create_marketplace.server_vendor.too_far", 0);
                 return;
             }
@@ -222,7 +239,8 @@ public class ServerPayloadHandler {
                 sendResult(player, false, "message.create_marketplace.invalid_block", 0);
                 return;
             }
-            int qty = payload.quantity();
+            // qty pochodzi wprost od klienta — clamp jest jedyną barierą przed przepełnieniem int.
+            int qty = Math.min(payload.quantity(), MAX_TRADE_QUANTITY);
             if (qty <= 0) return;
             net.minecraft.world.item.ItemStack template = sv.getTradeItem();
             if (template.isEmpty()) {

@@ -5,7 +5,6 @@
   "key.createmarketplace.open_market": "Open Global Market",
   "key.categories.createmarketplace": "Create: Marketplace",
   "itemGroup.create_marketplace": "Create: Marketplace",
-  
   "gui.create_marketplace.global_market.title": "Global Market",
   "gui.create_marketplace.global_market.my_shops": "My Shops",
   "gui.create_marketplace.global_market.search": "Search...",
@@ -20,7 +19,6 @@
   "gui.create_marketplace.global_market.back": "Back",
   "gui.create_marketplace.global_market.unknown_item": "Unknown",
   "gui.create_marketplace.global_market.free": "Free",
-
   "gui.create_marketplace.owner.server": "Server",
   "gui.create_marketplace.tab.market": "Market",
   "gui.create_marketplace.tab.favorites": "Favorites",
@@ -39,20 +37,17 @@
   "gui.create_marketplace.dim.nether": "Nether",
   "gui.create_marketplace.dim.end": "End",
   "gui.create_marketplace.footer.hint": "click header = sort · ★ favorite · Navigate = waypoint",
-
   "gui.create_marketplace.registration.title": "Shop Registration",
   "gui.create_marketplace.registration.publish": "Publish",
   "gui.create_marketplace.registration.name": "Shop Name",
   "gui.create_marketplace.registration.add_to_existing": "Add to existing shop:",
   "gui.create_marketplace.registration.selling": "Selling:",
   "gui.create_marketplace.registration.price": "Price:",
-
   "gui.create_marketplace.confirm.title": "Are you sure?",
   "gui.create_marketplace.confirm.delete_offer": "Delete this offer?",
   "gui.create_marketplace.confirm.delete_shop": "Delete the whole shop \"%s\"?",
   "gui.create_marketplace.confirm.yes": "Delete",
   "gui.create_marketplace.confirm.no": "Cancel",
-  
   "gui.create_marketplace.my_shops.title": "My Shops",
   "gui.create_marketplace.my_shops.delete": "Delete",
   "gui.create_marketplace.my_shops.no_shops": "You do not have any shops.",
@@ -61,7 +56,6 @@
   "gui.create_marketplace.my_shops.pos": "Pos: %s",
   "gui.create_marketplace.my_shops.no_item": "No item",
   "gui.create_marketplace.my_shops.free": "Free",
-  
   "message.create_marketplace.registration_success": "Server successfully registered your shop: %s",
   "message.create_marketplace.registration_success_server": "Registered shop \"%s\" as Server.",
   "message.create_marketplace.adminmode_on": "Admin mode: ON — shops you register belong to the Server.",
@@ -75,7 +69,6 @@
   "message.create_marketplace.offer_limit_reached": "You have reached the maximum number of offers (%s)!",
   "message.create_marketplace.cancelled_by_mod": "Registration cancelled by another mod.",
   "message.create_marketplace.delete_success": "Successfully deleted shop(s).",
-
   "gui.create_marketplace.server_vendor.admin.title": "Server Vendor — Configure",
   "gui.create_marketplace.server_vendor.admin.trade_item": "Trade item",
   "gui.create_marketplace.server_vendor.admin.currency": "Currency",
@@ -88,7 +81,6 @@
   "gui.create_marketplace.server_vendor.admin.allow_sell": "Allow selling",
   "gui.create_marketplace.server_vendor.admin.save": "Save",
   "gui.create_marketplace.server_vendor.admin.cancel": "Cancel",
-
   "gui.create_marketplace.server_vendor.trade.title": "Server Vendor",
   "gui.create_marketplace.server_vendor.trade.buy": "Buy",
   "gui.create_marketplace.server_vendor.trade.sell": "Sell",
@@ -96,7 +88,6 @@
   "gui.create_marketplace.server_vendor.trade.max": "Max",
   "gui.create_marketplace.server_vendor.trade.total": "Total",
   "gui.create_marketplace.server_vendor.trade.disabled": "Disabled",
-
   "message.create_marketplace.server_vendor.ok": "Trade successful (×%s).",
   "message.create_marketplace.server_vendor.no_funds": "Not enough currency.",
   "message.create_marketplace.server_vendor.no_items": "Not enough items.",
@@ -104,5 +95,13 @@
   "message.create_marketplace.server_vendor.disabled": "This side of the trade is disabled.",
   "message.create_marketplace.server_vendor.admin_required": "Enable Admin Mode to edit this block.",
   "message.create_marketplace.server_vendor.empty": "This vendor has no item configured.",
-  "message.create_marketplace.server_vendor.too_far": "You are too far from the vendor."
+  "message.create_marketplace.server_vendor.too_far": "You are too far from the vendor.",
+  "gui.create_marketplace.stock.unknown": "Stock unknown (shop not checked recently)",
+  "gui.create_marketplace.stock.unlimited": "Unlimited stock",
+  "gui.create_marketplace.stock.empty": "Out of stock",
+  "gui.create_marketplace.stock.available": "In stock (%s more trades)",
+  "gui.create_marketplace.stock.available_stale": "Last seen in stock (%s trades)",
+  "gui.create_marketplace.stock.age_now": "checked just now",
+  "gui.create_marketplace.stock.age_min": "checked %s min ago",
+  "gui.create_marketplace.stock.age_hour": "checked %s h ago"
 }

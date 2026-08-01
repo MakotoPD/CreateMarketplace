@@ -11,6 +11,8 @@ public class MarketConfig {
     public static final ModConfigSpec.ConfigValue<String> CUSTOM_WAYPOINT_SYMBOL;
     public static final ModConfigSpec.BooleanValue USE_CARD_DURABILITY;
     public static final ModConfigSpec.IntValue MAX_OFFERS_PER_PLAYER;
+    public static final ModConfigSpec.IntValue STOCK_CHECK_INTERVAL;
+    public static final ModConfigSpec.BooleanValue REMOVE_DEAD_OFFERS;
 
     // Client
     public static final ModConfigSpec.EnumValue<ButtonPosition> BUTTON_POSITION;
@@ -42,6 +44,20 @@ public class MarketConfig {
                 .comment("Maximum number of marketplace offers a single player can have.",
                          "Set to a high value to effectively disable the limit.")
                 .defineInRange("maxOffersPerPlayer", 100, 1, 10000);
+
+        STOCK_CHECK_INTERVAL = commonBuilder
+                .comment("How often (in seconds) the server refreshes shop stock levels.",
+                         "Only shops in currently loaded chunks are checked - shops elsewhere",
+                         "keep their last known reading, which the GUI labels with its age.",
+                         "Lower values mean fresher data at a slightly higher cost.")
+                .defineInRange("stockCheckIntervalSeconds", 30, 5, 600);
+
+        REMOVE_DEAD_OFFERS = commonBuilder
+                .comment("Automatically delete listings whose shop block no longer exists.",
+                         "Detected during the stock check, so it only ever triggers for blocks",
+                         "in loaded chunks - a shop in an unloaded chunk is never touched.",
+                         "When false, such listings stay on the market but are shown as empty.")
+                .define("removeDeadOffers", false);
 
         commonBuilder.pop();
         COMMON_SPEC = commonBuilder.build();

@@ -10,6 +10,7 @@ import pl.makoto.createmarketplace.data.MarketOffer;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -57,5 +58,23 @@ public class MarketApi {
             }
         }
         return Optional.empty();
+    }
+
+    /**
+     * Pyta zarejestrowane handlery o stan magazynowy sklepu. Pierwszy, który
+     * potrafi odpowiedzieć, wygrywa.
+     *
+     * @return liczba możliwych transakcji albo pusty {@code OptionalInt}, gdy
+     *         żaden handler nie potrafił tego ustalić
+     * @see IShopHandler#getStock(BlockEntity, Level, BlockPos)
+     */
+    public static OptionalInt resolveStock(BlockEntity be, Level level, BlockPos pos) {
+        for (IShopHandler handler : HANDLERS) {
+            OptionalInt stock = handler.getStock(be, level, pos);
+            if (stock.isPresent()) {
+                return stock;
+            }
+        }
+        return OptionalInt.empty();
     }
 }

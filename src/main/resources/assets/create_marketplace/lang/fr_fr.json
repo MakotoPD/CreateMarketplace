@@ -4,7 +4,6 @@
   "key.createmarketplace.open_market": "Ouvrir le Marché Global",
   "key.categories.createmarketplace": "Create: Marketplace",
   "itemGroup.create_marketplace": "Create: Marketplace",
-  
   "gui.create_marketplace.global_market.title": "Marché Global",
   "gui.create_marketplace.global_market.my_shops": "Mes Boutiques",
   "gui.create_marketplace.global_market.search": "Chercher...",
@@ -17,7 +16,6 @@
   "gui.create_marketplace.global_market.favorites_only": "★ Favoris",
   "gui.create_marketplace.global_market.all_shops": "☆ Tout",
   "gui.create_marketplace.global_market.back": "Retour",
-  
   "gui.create_marketplace.owner.server": "Serveur",
   "gui.create_marketplace.tab.market": "Marché",
   "gui.create_marketplace.tab.favorites": "Favoris",
@@ -31,16 +29,22 @@
   "gui.create_marketplace.registration.publish": "Publier",
   "gui.create_marketplace.registration.name": "Nom de la boutique",
   "gui.create_marketplace.registration.add_to_existing": "Ajouter à une boutique existante :",
-  
   "gui.create_marketplace.my_shops.title": "Mes Boutiques",
   "gui.create_marketplace.my_shops.delete": "Supprimer",
   "gui.create_marketplace.my_shops.no_shops": "Vous n'avez aucune boutique.",
   "gui.create_marketplace.my_shops.blocks": "Blocs : %s",
   "gui.create_marketplace.my_shops.price": "Prix : %s",
   "gui.create_marketplace.my_shops.pos": "Pos : %s",
-  
   "message.create_marketplace.registration_success": "Le serveur a enregistré votre boutique avec succès : %s",
   "message.create_marketplace.player_only": "Seul un joueur peut utiliser cette commande.",
   "message.create_marketplace.no_card": "Vous n'avez pas de Livre d'Enregistrement dans votre inventaire !",
-  "message.create_marketplace.delete_success": "Boutique(s) supprimée(s) avec succès."
+  "message.create_marketplace.delete_success": "Boutique(s) supprimée(s) avec succès.",
+  "gui.create_marketplace.stock.unknown": "Stock inconnu (boutique pas vérifiée récemment)",
+  "gui.create_marketplace.stock.unlimited": "Stock illimité",
+  "gui.create_marketplace.stock.empty": "Rupture de stock",
+  "gui.create_marketplace.stock.available": "En stock (%s échanges restants)",
+  "gui.create_marketplace.stock.available_stale": "Vu en stock la dernière fois (%s échanges)",
+  "gui.create_marketplace.stock.age_now": "vérifié à l’instant",
+  "gui.create_marketplace.stock.age_min": "vérifié il y a %s min",
+  "gui.create_marketplace.stock.age_hour": "vérifié il y a %s h"
 }

@@ -14,11 +14,21 @@ import net.minecraft.world.level.storage.DimensionDataStorage;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class MarketDatabase extends SavedData {
     private final List<MarketOffer> offers = new ArrayList<>();
+
+    /**
+     * Stan magazynowy per pozycja sklepu. Świadomie NIE jest zapisywany razem z
+     * ofertami — po restarcie serwera każdy odczyt byłby i tak nieaktualny, a
+     * pokazanie graczowi "ma towar" na podstawie danych sprzed tygodnia to
+     * dokładnie ten błąd, którego ta funkcja ma unikać. Mapa żyje tyle, co świat.
+     */
+    private final Map<BlockPos, StockInfo> stock = new HashMap<>();
 
     public MarketDatabase() {}
 
@@ -77,6 +87,7 @@ public class MarketDatabase extends SavedData {
     }
 
     public void removeOffer(BlockPos pos) {
+        stock.remove(pos);
         if (offers.removeIf(offer -> offer.pos().equals(pos))) {
             setDirty();
         }
@@ -84,6 +95,21 @@ public class MarketDatabase extends SavedData {
 
     public List<MarketOffer> getOffers() {
         return Collections.unmodifiableList(offers);
+    }
+
+    /**
+     * Zapisuje odczyt stanu magazynowego.
+     *
+     * @return true, jeśli zmieniła się sama liczba (a nie tylko znacznik czasu) —
+     *         dzięki temu skan cykliczny rozsyła pakiet tylko przy realnej zmianie
+     */
+    public boolean setStock(BlockPos pos, StockInfo info) {
+        StockInfo previous = stock.put(pos, info);
+        return previous == null || previous.units() != info.units();
+    }
+
+    public StockInfo getStock(BlockPos pos) {
+        return stock.getOrDefault(pos, StockInfo.NONE);
     }
 
     public static MarketDatabase get(MinecraftServer server) {

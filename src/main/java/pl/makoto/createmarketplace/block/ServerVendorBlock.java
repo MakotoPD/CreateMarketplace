@@ -127,7 +127,7 @@ public class ServerVendorBlock extends BaseEntityBlock {
                         .toList()
                         .forEach(o -> db.removeOffer(o.pos()));
                 PacketDistributor.sendToAllPlayers(
-                        new pl.makoto.createmarketplace.network.MarketUpdatePayload(db.getOffers()));
+                        pl.makoto.createmarketplace.network.MarketUpdatePayload.of(db));
             } catch (Exception ignored) {}
         }
         return super.playerWillDestroy(level, pos, state, player);

@@ -4,7 +4,6 @@
   "key.createmarketplace.open_market": "Abrir Mercado Global",
   "key.categories.createmarketplace": "Create: Marketplace",
   "itemGroup.create_marketplace": "Create: Marketplace",
-  
   "gui.create_marketplace.global_market.title": "Mercado Global",
   "gui.create_marketplace.global_market.my_shops": "Mis Tiendas",
   "gui.create_marketplace.global_market.search": "Buscar...",
@@ -17,7 +16,6 @@
   "gui.create_marketplace.global_market.favorites_only": "★ Favoritos",
   "gui.create_marketplace.global_market.all_shops": "☆ Todos",
   "gui.create_marketplace.global_market.back": "Volver",
-  
   "gui.create_marketplace.owner.server": "Servidor",
   "gui.create_marketplace.tab.market": "Mercado",
   "gui.create_marketplace.tab.favorites": "Favoritos",
@@ -31,16 +29,22 @@
   "gui.create_marketplace.registration.publish": "Publicar",
   "gui.create_marketplace.registration.name": "Nombre de la tienda",
   "gui.create_marketplace.registration.add_to_existing": "Añadir a tienda existente:",
-  
   "gui.create_marketplace.my_shops.title": "Mis Tiendas",
   "gui.create_marketplace.my_shops.delete": "Eliminar",
   "gui.create_marketplace.my_shops.no_shops": "No tienes ninguna tienda.",
   "gui.create_marketplace.my_shops.blocks": "Bloques: %s",
   "gui.create_marketplace.my_shops.price": "Precio: %s",
   "gui.create_marketplace.my_shops.pos": "Pos: %s",
-  
   "message.create_marketplace.registration_success": "El servidor ha registrado con éxito tu tienda: %s",
   "message.create_marketplace.player_only": "Solo un jugador puede usar este comando.",
   "message.create_marketplace.no_card": "¡No tienes un Libro de Registro en tu inventario!",
-  "message.create_marketplace.delete_success": "Tienda(s) eliminada(s) con éxito."
+  "message.create_marketplace.delete_success": "Tienda(s) eliminada(s) con éxito.",
+  "gui.create_marketplace.stock.unknown": "Existencias desconocidas (tienda no comprobada recientemente)",
+  "gui.create_marketplace.stock.unlimited": "Existencias ilimitadas",
+  "gui.create_marketplace.stock.empty": "Sin existencias",
+  "gui.create_marketplace.stock.available": "Disponible (%s intercambios más)",
+  "gui.create_marketplace.stock.available_stale": "Visto en stock por última vez (%s intercambios)",
+  "gui.create_marketplace.stock.age_now": "comprobado ahora mismo",
+  "gui.create_marketplace.stock.age_min": "comprobado hace %s min",
+  "gui.create_marketplace.stock.age_hour": "comprobado hace %s h"
 }

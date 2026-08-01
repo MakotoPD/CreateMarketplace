@@ -7,6 +7,7 @@ import net.minecraft.util.Mth;
 import net.neoforged.neoforge.network.PacketDistributor;
 import pl.makoto.createmarketplace.AdminMode;
 import pl.makoto.createmarketplace.data.MarketOffer;
+import pl.makoto.createmarketplace.data.StockInfo;
 import pl.makoto.createmarketplace.network.DeleteShopPayload;
 
 import java.util.ArrayList;
@@ -202,6 +203,8 @@ public class MyShopsScreen extends Screen {
             g.renderItem(o.item(), slotX + 1, slotY + 1);
             g.renderItemDecorations(this.font, o.item(), slotX + 1, slotY + 1);
         }
+        StockInfo stock = pl.makoto.createmarketplace.network.ClientPayloadHandler.getStock(o.pos());
+        stockDot(g, slotX - 1, slotY - 1, stock);
         String iname = (o.item() == null || o.item().isEmpty())
                 ? Component.translatable("gui.create_marketplace.my_shops.no_item").getString()
                 : o.item().getHoverName().getString();
@@ -230,7 +233,10 @@ public class MyShopsScreen extends Screen {
 
         if (mx >= slotX && mx < slotX + 18 && my >= slotY && my < slotY + 18
                 && o.item() != null && !o.item().isEmpty()) {
-            g.renderTooltip(this.font, o.item(), mx, my);
+            java.util.List<net.minecraft.network.chat.Component> lines =
+                    new java.util.ArrayList<>(getTooltipFromItem(this.minecraft, o.item()));
+            lines.addAll(stockTooltip(stock));
+            g.renderComponentTooltip(this.font, lines, mx, my);
         }
     }
 

@@ -15,6 +15,7 @@
 *   **Live Search:** Find specific items, shops, or owners instantly with the built-in search bar.
 *   **Favorites System:** Mark your favorite shops with a star (★) to keep them at the top of your list.
 *   **Grouped Listings:** Offers are logically grouped by owner and shop name for easy browsing.
+*   **Stock Indicator:** Every listing carries a coloured dot showing whether the shop still has goods — green when confirmed in stock, amber when the reading is older, red when empty, grey when it could not be checked. Hovering an item shows the exact count *and how long ago it was measured*, so a stale reading never masquerades as a fresh one.
 
 ### 📍 Seamless Navigation
 *   **Xaero's Minimap Integration:** One-click navigation! Sent waypoints directly to your minimap to find shops in the world.
@@ -95,10 +96,17 @@ The price stack works in one of two modes:
 
 ## ⚙️ Configuration
 
-Located in `config/create_marketplace-common.toml`:
+**Server / world settings** — `config/create_marketplace-common.toml`:
 *   `waypointSymbolMode`: Set how waypoints look on the map (`ICON`, `FIRST_LETTER`, `CUSTOM`).
 *   `customWaypointSymbol`: Define a specific character for waypoints.
 *   `useCardDurability`: Toggle whether Registration Cards are consumed when registering a shop.
+*   `maxOffersPerPlayer`: Maximum listings a single player may hold (default `100`, range `1`–`10000`). Admin-mode registrations bypass this limit.
+*   `stockCheckIntervalSeconds`: How often shop stock levels are refreshed (default `30`, range `5`–`600`).
+*   `removeDeadOffers`: Delete listings whose shop block no longer exists (default `false` — they are shown as empty instead).
+
+**Client settings** — `config/create_marketplace-client.toml`:
+*   `buttonPosition`: Where the Marketplace button sits when EMI is absent — `CORNER` (default), `INVENTORY_SIDE`, or `CUSTOM`. With EMI installed the button follows EMI's own button row automatically.
+*   `customButtonX` / `customButtonY`: Explicit button coordinates, used only when `buttonPosition` is `CUSTOM`.
 
 ---
 
@@ -118,8 +126,8 @@ repositories {
 }
 
 dependencies {
-    // Replace 0.2.5 with the version you want to use
-    implementation "maven.modrinth:create-marketplace:0.2.5"
+    // Replace 0.5.0 with the version you want to use
+    implementation "maven.modrinth:create-marketplace:0.5.0"
 }
 ```
 
@@ -129,6 +137,30 @@ Implement `IShopHandler` and register it to support custom blocks:
 ```java
 MarketApi.registerHandler(new MyCustomShopHandler());
 ```
+
+### Reporting Stock Levels
+Handlers may optionally implement `getStock` so their shops take part in the stock
+indicator. It is a `default` method — existing handlers keep working unchanged, their
+shops simply show as *unknown*.
+
+```java
+@Override
+public OptionalInt getStock(BlockEntity be, Level level, BlockPos pos) {
+    if (!(be instanceof MyShopBlockEntity shop)) return OptionalInt.empty();
+    if (shop.isCreative()) return OptionalInt.of(StockInfo.INFINITE);
+    return OptionalInt.of(shop.getRemainingTrades());
+}
+```
+
+Return **the number of trades still possible**, not the raw item count — a shop holding
+3 items but selling in stacks of 64 is empty in practice.
+
+> ⚠️ Never return `0` as a fallback when you cannot determine the stock. Zero means
+> *confirmed empty* and hides the shop's goods from players. Return
+> `OptionalInt.empty()` instead — the market will display *unknown*, which is honest.
+
+The method is only ever called **server-side** and only for blocks in **loaded chunks**,
+so it is safe to read neighbouring block entities from it.
 
 ### Market Events (NeoForge)
 You can listen to market activities using the NeoForge event bus:

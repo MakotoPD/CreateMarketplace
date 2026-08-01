@@ -43,6 +43,37 @@ public class ShopScanner {
         return Optional.empty();
     }
 
+    /** Wywołuje bezargumentową metodę publiczną; pusty Optional gdy jej nie ma lub rzuciła. */
+    public static Optional<Object> invoke(Object target, String methodName) {
+        try {
+            return Optional.ofNullable(target.getClass().getMethod(methodName).invoke(target));
+        } catch (Exception ignored) {
+            return Optional.empty();
+        }
+    }
+
+    /** Bezargumentowa metoda zwracająca boolean (np. {@code isCreativeVendor}). */
+    public static boolean invokeBoolean(Object target, String methodName) {
+        return invoke(target, methodName).orElse(null) instanceof Boolean b && b;
+    }
+
+    /**
+     * Wywołuje metodę o podanej nazwie i jednym parametrze, przekazując {@code null}.
+     * Używane dla {@code TableClothBlockEntity#getStockLevelForTrade(ShoppingList)} —
+     * typu parametru nie znamy w czasie kompilacji, więc szukamy po nazwie i arności.
+     */
+    public static Optional<Object> invokeWithNullArg(Object target, String methodName) {
+        try {
+            for (java.lang.reflect.Method m : target.getClass().getMethods()) {
+                if (m.getName().equals(methodName) && m.getParameterCount() == 1
+                        && !m.getParameterTypes()[0].isPrimitive()) {
+                    return Optional.ofNullable(m.invoke(target, new Object[]{null}));
+                }
+            }
+        } catch (Exception ignored) {}
+        return Optional.empty();
+    }
+
     public static ItemStack getCoinItemByName(String name, int count) {
         try {
             // Próbujemy znaleźć przedmiot monety w rejestrze po ID: numismatics:<name>

@@ -9,8 +9,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Extracted delete logic from ServerPayloadHandler for testability.
- * Determines whether a delete operation actually removes offers and returns the result.
+ * Wybór ofert do usunięcia — używane przez {@link ServerPayloadHandler#handleDeleteShop}.
+ * Sam nie modyfikuje bazy: zwraca listę trafień, o resztę dba handler.
  */
 public class DeleteShopLogic {
 
@@ -23,16 +23,17 @@ public class DeleteShopLogic {
     public record DeleteResult(boolean changed, List<MarketOffer> removed) {}
 
     /**
-     * Attempts to delete an offer by position. Only removes offers owned by the specified player.
+     * Pojedyncza oferta pod daną pozycją. Gracz może usunąć tylko własną,
+     * admin — dowolną.
      *
-     * @param offers   the current list of offers (not modified)
-     * @param pos      the position to delete
-     * @param playerId the UUID of the requesting player
-     * @return a DeleteResult indicating whether a change occurred and which offers were removed
+     * @param offers   bieżąca lista ofert (nie jest modyfikowana)
+     * @param pos      pozycja do usunięcia
+     * @param playerId UUID gracza wysyłającego żądanie
+     * @param admin    czy gracz jest w trybie administratora
      */
-    static DeleteResult deleteByPosition(List<MarketOffer> offers, BlockPos pos, UUID playerId) {
+    public static DeleteResult deleteByPosition(List<MarketOffer> offers, BlockPos pos, UUID playerId, boolean admin) {
         Optional<MarketOffer> existing = offers.stream()
-                .filter(o -> o.pos().equals(pos) && o.ownerId().equals(playerId))
+                .filter(o -> o.pos().equals(pos) && (admin || o.ownerId().equals(playerId)))
                 .findFirst();
         if (existing.isPresent()) {
             return new DeleteResult(true, List.of(existing.get()));
@@ -41,16 +42,16 @@ public class DeleteShopLogic {
     }
 
     /**
-     * Attempts to delete offers by shop name. Only removes offers owned by the specified player.
+     * Wszystkie oferty danego sklepu należące do {@code ownerId}. Handler podaje tu
+     * UUID gracza albo {@code AdminMode.SERVER_UUID} — sklepy "Serwera" w trybie admina.
      *
-     * @param offers   the current list of offers (not modified)
-     * @param shopName the shop name to delete
-     * @param playerId the UUID of the requesting player
-     * @return a DeleteResult indicating whether a change occurred and which offers were removed
+     * @param offers   bieżąca lista ofert (nie jest modyfikowana)
+     * @param shopName nazwa sklepu do usunięcia
+     * @param ownerId  właściciel, którego oferty wolno usunąć
      */
-    static DeleteResult deleteByShopName(List<MarketOffer> offers, String shopName, UUID playerId) {
+    public static DeleteResult deleteByShopName(List<MarketOffer> offers, String shopName, UUID ownerId) {
         List<MarketOffer> toRemove = offers.stream()
-                .filter(o -> o.shopName().equals(shopName) && o.ownerId().equals(playerId))
+                .filter(o -> o.shopName().equals(shopName) && o.ownerId().equals(ownerId))
                 .toList();
         return new DeleteResult(!toRemove.isEmpty(), toRemove);
     }
