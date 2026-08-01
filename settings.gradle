@@ -1,6 +1,16 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        // ForgeGradle 6 — jedyny toolchain obsługujący Forge 47 / MC 1.20.1
+        maven {
+            name = 'MinecraftForge'
+            url = 'https://maven.minecraftforge.net/'
+        }
+        // librarian — mapowania Parchment dla ForgeGradle
+        maven {
+            name = 'ParchmentMC'
+            url = 'https://maven.parchmentmc.org'
+        }
     }
 }
 

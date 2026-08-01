@@ -1,0 +1,54 @@
+# Metadane moda dla Forge 47 / MC 1.20.1.
+#
+# Uwaga: na 1.20.1 plikiem metadanych jest META-INF/mods.toml, a NIE
+# META-INF/neoforge.mods.toml (ten drugi format wchodzi dopiero od NeoForge 1.20.2+).
+# Wszystkie trzy zależności tego moda — Create 6.0.8, Numismatics 1.0.15 i Xaero 26.4.2 —
+# deklarują na 1.20.1 zależność od modId "forge", nie "neoforge".
+#
+# Plik leży w resources (a nie w templates/ jak na 1.21.1), bo ForgeGradle nie ma
+# odpowiednika zadania generateModMetadata z ModDevGradle — podmianę zmiennych
+# robi processResources.
+
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+issueTrackerURL="https://github.com/MakotoPD/CreateMarketplace/issues"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+displayURL="https://github.com/MakotoPD/CreateMarketplace"
+logoFile="logo.png"
+authors="MakotoPD"
+description='''
+The global marketplace for Create! servers. Register your Numismatics shops, browse other players’ listings and navigate to them using Xaero’s Minimap.
+'''
+
+[[dependencies.${mod_id}]]
+    modId="forge"
+    mandatory=true
+    versionRange="${forge_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="create"
+    mandatory=true
+    versionRange="[6.0.0,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="numismatics"
+    mandatory=true
+    versionRange="[1.0.0,)"
+    ordering="AFTER"
+    side="BOTH"
