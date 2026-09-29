@@ -76,7 +76,8 @@ public class ServerPayloadHandler {
                     .withStyle(ChatFormatting.RED));
                 return;
             }
-            if (MarketApi.resolveShop(be, player.serverLevel(), pos).isEmpty()) {
+            var shopResult = MarketApi.resolveShop(be, player.serverLevel(), pos);
+            if (shopResult.isEmpty()) {
                 player.sendSystemMessage(Component.translatable("message.create_marketplace.not_a_shop")
                     .withStyle(ChatFormatting.RED));
                 return;
@@ -104,8 +105,8 @@ public class ServerPayloadHandler {
                 shopName,
                 clientOffer.pos(),
                 player.level().dimension().location(),
-                clientOffer.item(),
-                clientOffer.currency(),
+                shopResult.get().sellingItem(),
+                shopResult.get().currencyItem(),
                 System.currentTimeMillis()
             );
 
