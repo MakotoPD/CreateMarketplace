@@ -4,33 +4,6 @@ import net.minecraft.world.item.ItemStack;
 import java.util.Optional;
 
 public class ShopScanner {
-    
-    public static ItemStack findItemStackRecursive(Object source, int depth) {
-        if (source == null || depth < 0)
-            return ItemStack.EMPTY;
-        Class<?> type = source.getClass();
-        while (type != null && type != Object.class) {
-            for (java.lang.reflect.Field field : type.getDeclaredFields()) {
-                if (java.lang.reflect.Modifier.isStatic(field.getModifiers()))
-                    continue;
-                try {
-                    field.setAccessible(true);
-                    Object value = field.get(source);
-                    if (value instanceof ItemStack stack && !stack.isEmpty()) {
-                        return stack.copy();
-                    }
-                    if (value != null && depth > 0 && !value.getClass().isPrimitive() && !(value instanceof String)
-                            && !(value instanceof Number)) {
-                        ItemStack found = findItemStackRecursive(value, depth - 1);
-                        if (!found.isEmpty())
-                            return found;
-                    }
-                } catch (Exception ignored) {}
-            }
-            type = type.getSuperclass();
-        }
-        return ItemStack.EMPTY;
-    }
 
     public static Optional<ItemStack> invokeMethodReturningItemStack(Object target, String methodName) {
         try {

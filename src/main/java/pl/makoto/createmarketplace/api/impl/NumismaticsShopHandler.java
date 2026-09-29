@@ -82,8 +82,7 @@ public class NumismaticsShopHandler implements IShopHandler {
             return OptionalInt.of(StockInfo.INFINITE);
         }
 
-        ItemStack selling = ShopScanner.invokeMethodReturningItemStack(be, "getSellingItem")
-                .orElse(ItemStack.EMPTY);
+        ItemStack selling = vendorItem(be);
         if (selling.isEmpty()) return OptionalInt.empty();
         int unit = Math.max(1, selling.getCount());
 
@@ -104,18 +103,24 @@ public class NumismaticsShopHandler implements IShopHandler {
     }
 
     /**
-     * Porównanie przez {@code matchesSellingItem} vendora, żeby respektować jego
+     * Porównanie przez {@code matchesFilterItem}/{@code matchesSellingItem} vendora, żeby respektować jego
      * własne reguły (Numismatics ignoruje np. koszt naprawy). Fallback na
      * porównanie samego przedmiotu, gdyby metoda zniknęła.
      */
     private static boolean matches(BlockEntity be, ItemStack selling, ItemStack candidate) {
         if (candidate.isEmpty()) return false;
-        try {
-            var m = be.getClass().getMethod("matchesSellingItem", ItemStack.class);
-            Object r = m.invoke(be, candidate);
-            if (r instanceof Boolean b) return b;
-        } catch (Exception ignored) {}
+        for (String name : new String[]{"matchesFilterItem", "matchesSellingItem"}) {
+            try {
+                if (be.getClass().getMethod(name, ItemStack.class).invoke(be, candidate) instanceof Boolean b) return b;
+            } catch (Exception ignored) {}
+        }
         return ItemStack.isSameItem(selling, candidate);
+    }
+
+    private static ItemStack vendorItem(BlockEntity be) {
+        return ShopScanner.invokeMethodReturningItemStack(be, "getFilterItem")
+                .or(() -> ShopScanner.invokeMethodReturningItemStack(be, "getSellingItem"))
+                .orElse(ItemStack.EMPTY);
     }
 
     private static boolean isOwnBlock(BlockEntity be) {
@@ -145,11 +150,7 @@ public class NumismaticsShopHandler implements IShopHandler {
 
             if (isVendor) {
                 // Logika dla Vendor
-                if (nbt.contains("Selling", 10)) {
-                    sellingItem = ItemStack.parseOptional(level.registryAccess(), nbt.getCompound("Selling"));
-                } else {
-                    sellingItem = ShopScanner.findItemStackRecursive(be, 3);
-                }
+                sellingItem = vendorItem(be);
 
                 // Numismatics trzyma cenę rozbitą na nominały (SliderStylePriceBehaviour).
                 // Sumujemy WSZYSTKIE do spurów — inaczej vendor za "1 cog + 3 spur"
